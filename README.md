@@ -17,3 +17,6 @@ Though started as a personal tool, the hope is that it has been a small contribu
 - **Improved Performance**: Legacy dependencies such as jQuery have been removed in favor of modern, native web APIs (like `fetch`).
 - **Consistent Experience**: The new design aesthetic has been unified across all pages, including the Developer Notes and About page.
 - **Preserved History**: Historical features, such as the global usage map, have been retained and integrated into the new design.
+
+## Previous/legacy Versions
+- Version 8: [sbc-v8.vercel.app](https://sbc-v8.vercel.app/)

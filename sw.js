@@ -1,68 +1,119 @@
 self.importScripts( "config.js" );
 
-// cache name for cache versioning
-var cacheName = "v"+serviceWorkerCacheVersion+":static";
+var cacheName = "v" + serviceWorkerCacheVersion + ":static";
 
-// when the service is installed
-self.addEventListener( "install" , ( event ) =>
+// Same-origin assets only (reliable offline shell). CDN URLs use network-first below.
+var precacheRelative = [
+	"index.html",
+	"config.js",
+	"manifest.json",
+	"src/App.js",
+	"src/main.js",
+	"img/favicon.png",
+	"img/refresh.png",
+	"img/icon_120.png",
+	"img/icon_180.png",
+	"img/icon_192.png",
+	"img/icon_512.png",
+	"pages/about.html",
+	"pages/dev_notes.html",
+	"pages/satoshiday.html",
+	"pages/grow.html",
+	"pages/tips.html",
+	"pages/fun.html",
+	"pages/why.html",
+	"pages/privacy.html",
+	"pages/ichthys.html"
+];
+
+function precacheUrl( path )
 {
-	// cache all required files for offline use
-	event.waitUntil( caches.open( cacheName ).then( ( cache ) =>
+	return new URL( path, self.location ).href;
+}
+
+self.addEventListener( "install", ( event ) =>
+{
+	event.waitUntil(
+		caches.open( cacheName ).then( ( cache ) =>
+		{
+			return Promise.all(
+				precacheRelative.map( ( path ) =>
+					cache.add( precacheUrl( path ) ).catch( ( err ) =>
+					{
+						console.warn( "sw precache skip:", path, err );
+					} )
+				)
+			);
+		} ).then( () => self.skipWaiting() )
+	);
+} );
+
+self.addEventListener( "activate", ( event ) =>
+{
+	event.waitUntil(
+		caches.keys().then( ( keyList ) =>
+			Promise.all( keyList.map( ( key ) =>
+			{
+				if ( key !== cacheName ) return caches.delete( key );
+			} ) )
+		).then( () => self.clients.claim() )
+	);
+} );
+
+self.addEventListener( "fetch", ( event ) =>
+{
+	if ( event.request.method !== "GET" ) return;
+
+	var url = new URL( event.request.url );
+
+	// CryptoCompare: always network; never cache (stale prices / wrong offline UX)
+	if ( url.hostname === "min-api.cryptocompare.com" )
 	{
-		return cache.addAll( [
-            "/",
-			"config.js",
-            "index.html",
-			"manifest.json",
-			"style.css",
-			"src/App.js",
-			"src/main.js",
-			"img/favicon.png",
-			"img/icon_120.png",
-			"img/icon_180.png",
-			"img/icon_192.png",
-			"img/icon_512.png"
-		] );
-	}));
-    console.log( "sw > installed" );
-    // activate the new service worker version immediately
-    self.skipWaiting();
-});
+		event.respondWith(
+			fetch( event.request ).catch( () =>
+				new Response(
+					JSON.stringify( { Response: "Error", Message: "Offline — connect to load prices." } ),
+					{ status: 503, headers: { "Content-Type": "application/json" } }
+				)
+			)
+		);
+		return;
+	}
 
-
-
-// when a new version of the service worker is activated
-addEventListener( "activate" , ( event ) => 
-{
-    // delete the old cache
-	event.waitUntil( caches.keys().then( ( keyList ) => Promise.all( keyList.map( ( key ) => 
+	// Other third parties (jQuery, W3.CSS, StatCounter, etc.): try network, then cache
+	if ( url.origin !== self.location.origin )
 	{
-		if ( key !== cacheName ) return caches.delete( key );
-    }))));
-    console.log( "sw > activated" );
-});
+		event.respondWith(
+			fetch( event.request ).catch( () => caches.match( event.request ) )
+		);
+		return;
+	}
 
+	// Root URL → cached index.html (offline home)
+	if ( url.pathname === "/" || url.pathname === "" )
+	{
+		event.respondWith(
+			caches.match( precacheUrl( "index.html" ) ).then( ( cached ) =>
+				cached || fetch( event.request )
+			)
+		);
+		return;
+	}
 
-
-// when the browser fetches a URL
-self.addEventListener( "fetch" , ( event ) =>
-{
-    // cache first caching - only go to the network if no cache match was found, other caching strategies can be used too
-    event.respondWith( caches.match( event.request ).then( ( response ) => 
-    {
-        return response || fetch( event.request );
-    }));
-});
-
-
-// Below is code from web page https://whatwebcando.today/articles/handling-service-worker-updates/
-// This seemed to work. It notices an update, then does a hard refresh. The only downside...it does it whether the person wants it or not and might be a slight nuisance. But, it works and likely is not a problem at all with this app.
-// Service Worker-based solution
-self.addEventListener('activate', async () => {
-	// after we've taken over, iterate over all the current clients (windows)
-	const tabs = await self.clients.matchAll({type: 'window'})
-	tabs.forEach((tab) => {
-	  // ...and refresh each one of them
-	  tab.navigate(tab.url)
-	})
-  })
+	// Same-origin: cache first, then network
+	event.respondWith(
+		caches.match( event.request ).then( ( cached ) =>
+		{
+			if ( cached ) return cached;
+			return fetch( event.request ).then( ( response ) =>
+			{
+				var copy = response.clone();
+				if ( response.ok )
+				{
+					caches.open( cacheName ).then( ( cache ) => cache.put( event.request, copy ) );
+				}
+				return response;
+			} );
+		} )
+	);
+} );

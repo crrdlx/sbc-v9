@@ -35,6 +35,10 @@ function init()
     window.addEventListener( "online" , ( event ) =>
     {
         console.log( "online event" );
+        if ( typeof window.updatePrices === "function" )
+        {
+            window.updatePrices();
+        }
     });
 
     // event listener when going offline
@@ -53,4 +57,9 @@ function init()
     });
 
     app.start();
+
+    if ( typeof window.initSbcUi === "function" )
+    {
+        window.initSbcUi();
+    }
 }

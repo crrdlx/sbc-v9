@@ -1,5 +1,6 @@
-# sbc-v8
-Satoshi Bitcoin Converter v8
+# sbc-v9
+
+Satoshi Bitcoin Converter v9 — live preview: [https://sbc-v9.vercel.app](https://sbc-v9.vercel.app)
 
 - bitcoin to USD (or other fiat currency)
 - USD (or fiat) to bitcoin
@@ -11,3 +12,5 @@ The Satoshi Bitcoin Converter (SBC) began in [June of 2013](https://bitcointalk.
 It started as a personal tool, then a website, then an Android app in the [Play store](https://play.google.com/store/apps/details?id=com.satoshi.bitcoin.converter&hl=en_US) (no longer supported), then back to a website format, and finally to a Progressive Web App (PWA).
 
 Though started as a personal tool, the hope is that it has been a small contribution to Bitcoin and has helped some people along the way.
+
+Repository: [github.com/crrdlx/sbc-v9](https://github.com/crrdlx/sbc-v9)

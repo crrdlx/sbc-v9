@@ -11,3 +11,9 @@ The Satoshi Bitcoin Converter (SBC) began in [June of 2013](https://bitcointalk.
 It started as a personal tool, then a website, then an Android app in the [Play store](https://play.google.com/store/apps/details?id=com.satoshi.bitcoin.converter&hl=en_US) (no longer supported), then back to a website format, and finally to a Progressive Web App (PWA).
 
 Though started as a personal tool, the hope is that it has been a small contribution to Bitcoin and has helped some people along the way.
+
+## What's new in v9?
+- **Modernized UI**: A completely redesigned, premium dark-mode interface featuring a glassmorphism design.
+- **Improved Performance**: Legacy dependencies such as jQuery have been removed in favor of modern, native web APIs (like `fetch`).
+- **Consistent Experience**: The new design aesthetic has been unified across all pages, including the Developer Notes and About page.
+- **Preserved History**: Historical features, such as the global usage map, have been retained and integrated into the new design.

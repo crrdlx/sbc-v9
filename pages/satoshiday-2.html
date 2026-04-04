@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Satoshi Day - Satoshi Bitcoin Converter</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="manifest" href="manifest.json">
+  <style>
+    body {
+      background: #f6f6f6;
+      max-width: 750px;
+      margin: 40px auto;
+      padding: 0 22px;
+      font: 18px/1.5 -apple-system, BlinkMacSystemFont, /* MacOS and iOS */
+                   'avenir next', avenir, /* MacOS and iOS */
+                   'Segoe UI', /* Windows */
+                   'lucida grande', /* Older MacOS */
+                   'helvetica neue', helvetica, /* Older MacOS */
+                   'Fira Sans', /* Firefox OS */
+                   roboto, noto, /* Google stuff */
+                   'Droid Sans', /* Old Google stuff */
+                   cantarell, oxygen, ubuntu, /* Linux stuff */
+                   'franklin gothic medium', 'century gothic', /* Windows stuff */
+                   'Liberation Sans', /* Linux */
+                   sans-serif; /* Everything else */;
+      color: #222;
+    }
+
+    smalltype {
+      font-style: normal;
+      font-size: 65%;
+      color: #000000;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      color: #333333;
+      font-weight: bold;
+      line-height: 1.2;
+      margin-bottom: 1em;
+      margin-top: 2em;
+    }
+
+    h1 {
+      font-size: 2.2em;
+      text-align: center;
+    }
+
+    .form-container {
+      max-width: 350px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .price-info {
+      text-align: center;
+      margin: 1em 0;
+    }
+
+    .chart-container {
+      max-width: 600px;
+      margin: 1em auto;
+      height: 400px;
+    }
+
+    @media (max-width: 600px) {
+      .form-container { margin-left: 15%; }
+      .chart-container { max-width: 100%; }
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+</head>
+<body onload="init()">
+  <a name="home_top_page"></a>
+  <center>
+    <div class="w3-container">
+      <a href="../index.html" class="w3-button w3-round-large w3-orange">   &#x30B7   Satoshi Bitcoin Converter.com</a><br>
+    </div>
+    <p class="smalltype" style="text-align:center"><smalltype>SBC version 8</smalltype></p>
+  </center>
+
+  <h3>Satoshi Day</h3>
+
+  <p>If Bitcoin indeed goes "to the moon" as many expect, the humble little satoshi will become the unit of trade for everyday matters. Right now, for much of the world, the U.S. dollar is the standard. But, things are changing.</p>
+  <p>When one satoshi equals one USD penny, call that day "Satoshi Day".</p>
+
+  <p><b>Following is the original suggestion for Satoshi Day from Nov. 26, 2017:</b></p>
+  <blockquote>
+    <p><i>Okay, since it needs to be done, and somebody's gotta do it, I'm naming the day when one satoshi is on even par with one USD penny as "Satoshi Day". The US dollar is the symbolic de facto fiat and the penny is the smallest unit. A satoshi is the smallest bitcoin unit. When 1 penny = 1 satoshi, we're there.</i></p>
+    <p><i>Things are not as far away as one might think. A single penny is worth only 110 satoshi right now. And with bitcoin rising, that satoshi-to-penny ratio is dropping. Maybe somebody with better math skills can figure out what one penny was worth in satoshi a year ago...must have been a few hundred satoshi to one penny. It's happening.</i></p>
+    <p><i>Traditions will be needed when the Satoshi Day comes. Fireworks? Songs? Lighting your favorite fiat bill on fire and launching it with one of those Chinese lantern things?</i></p>
+  </blockquote>
+
+  <p>Read the original post "Satoshi Day" post on: 
+  <a href="https://www.reddit.com/r/Bitcoin/comments/7flcw4/satoshi_day_when_one_usd_penny_equals_one_satoshi/">Reddit</a> | <a href="https://bitcointalk.org/index.php?topic=2464147.msg25232749#msg25232749">BitcoinTalk.org</a>.</p>
+
+  <p><b>Current Satoshi-to-Penny Ratio</b></p>
+  <p>See how many sats one penny is worth right now:</p>
+
+  <div class="form-container">
+    <table border="0" cellpadding="0" cellspacing="0" style="margin: 0 auto;">
+      <form name="unitconverter">
+        <tbody>
+          <tr>
+            <td>
+              <input type="text" inputmode="numeric" onkeyup="fiatConvert()" value="" name="fiatValue" size="12"> $ USD
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <input type="text" inputmode="numeric" onkeyup="satoshiConvert()" value="" name="satoshi" size="12"> シ sats
+            </td>
+          </tr>
+        </tbody>
+      </form>
+    </table>
+  </div>
+
+  <p class="price-info"><big>Current BTC Price: <span id="coinPrice">Loading current price...</span></big></p>
+
+  <div class="chart-container">
+    <canvas id="satsRatioChart"></canvas>
+  </div>
+
+  <p>Over time, watch the red line draw down to 1 and the orange line grow up to 1. Eventually, when one Bitcoin is worth $1M, the penny-to-sat ratio will be 1:1. That'll be Satoshi Day. </p>
+  
+  <h3>Satoshi Day Progress Tracking</h3>
+  
+  <p><b>How close are we to Satoshi Day?</b> The charts below show our progress toward the day when 1 satoshi = 1 penny. We're tracking multiple ways to measure this progress:</p>
+  
+  <div class="chart-container">
+    <canvas id="progressChart"></canvas>
+  </div>
+  
+  <p><b>Progress Explanation:</b></p>
+  <ul>
+    <li><b>Red Progress Line:</b> Shows how close we are to Satoshi Day based on the current satoshi-to-penny ratio. When this reaches 100%, we've achieved Satoshi Day.</li>
+    <li><b>Orange Target Line:</b> Shows the theoretical progress if Bitcoin reaches $1M (the commonly cited target for Satoshi Day).</li>
+    <li><b>Current Progress:</b> <span id="currentProgress">Calculating...</span></li>
+    <li><b>Remaining:</b> <span id="remainingProgress">Calculating...</span></li>
+  </ul>
+  
+     <div class="chart-container">
+     <canvas id="circularProgressChart"></canvas>
+   </div>
+   
+   <p><b>Bitcoin Price Progress:</b> This circular chart shows how close Bitcoin is to reaching $1M. The colored area represents current progress toward the $1M target.</p>
+   
+   <div class="chart-container">
+     <canvas id="mountainChart"></canvas>
+   </div>
+   
+   <p><b>Mountain Climb:</b> Visual representation of Bitcoin's journey from $0 to $1M. The climber shows where we are now on this epic ascent to the peak.</p>
+  
+  <p class="footer" style="text-align:center">🚀 🌙</p>
+
+  <p class="footer" style="text-align:center"><small>Satoshi Bitcoin Converter - since 2013</small></p>
+
+  <center>
+    <img src="../img/icon_120.png" border="0" width="18">
+  </center>
+
+  <!-- StatCounter Code -->
+  <script type="text/javascript">
+    var sc_project=9064341; 
+    var sc_invisible=1; 
+    var sc_partition=35; 
+    var sc_security="4159c4ae"; 
+  </script>
+  <script type="text/javascript" src="https://www.statcounter.com/counter/counter_xhtml.js"></script>
+  <noscript><div class="statcounter"><a href="https://www.statcounter.com/" target="_blank"><img class="statcounter" src="https://c36.statcounter.com/9064341/0/4159c4ae/1/" alt="hit counter html code"></a></div></noscript>
+
+  <script language="JavaScript">
+    let altcoinSelected = "BTC"; // Default to Bitcoin
+    let fiatSelected = "USD";    // Default to USD
+    let currentPrice = 0;        // Price of selected altcoin in selected fiat
+    let altcoinToBtcPrice = 0;   // Price of selected altcoin in BTC
+
+    // Map ticker symbols to full names
+    const coinNames = {
+      "BTC": "Bitcoin",
+      "ETH": "Ethereum",
+      "LTC": "Litecoin",
+      "XRP": "Ripple",
+      "SOL": "Solana",
+      "DOGE": "Dogecoin",
+      "WLD": "Worldcoin",
+      "CBBTC": "Coinbase Wrapped BTC"
+    };
+
+    function init() {
+      updatePrices();
+      fetchHistoricalData();
+      // progress charts will render after current price loads
+    }
+
+    function updatePrices() {
+      $.ajax({
+        url: `https://min-api.cryptocompare.com/data/price?fsym=${altcoinSelected}&tsyms=${fiatSelected},BTC`,
+        method: "GET",
+        dataType: "json",
+        success: function(data) {
+          if (data.Response === "Error") {
+            $("#coinPrice").text("Error: Invalid symbol or API unavailable");
+            console.error("API Error:", data.Message);
+            return;
+          }
+          currentPrice = parseFloat(data[fiatSelected]) || 0;
+          altcoinToBtcPrice = parseFloat(data["BTC"]) || (altcoinSelected === "BTC" ? 1 : 0);
+          $("#coinPrice").text('$' + currentPrice.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+          const form = document.unitconverter;
+          form.fiatValue.value = "0.01";
+          fiatConvert();
+          // Render charts that depend on currentPrice only after it is available
+          renderProgressCharts();
+        },
+        error: function(xhr, status, error) {
+          $("#coinPrice").text("Error: Unable to fetch prices - check connection or API");
+          console.error("AJAX Error:", status, error, xhr.responseText);
+        }
+      });
+    }
+
+    function fetchHistoricalData() {
+      const startDate = new Date('2017-11-26').getTime() / 1000;
+      const endDate = Math.floor(Date.now() / 1000);
+      const days = Math.ceil((endDate - startDate) / (24 * 3600));
+      const maxLimit = 2000;
+      let allPrices = [];
+      let allLabels = [];
+
+      function fetchChunk(toTs, remainingDays) {
+        const limit = Math.min(maxLimit, remainingDays);
+        $.ajax({
+          url: `https://min-api.cryptocompare.com/data/v2/histoday?fsym=BTC&tsym=USD&limit=${limit}&toTs=${toTs}`,
+          method: "GET",
+          dataType: "json",
+          success: function(data) {
+            if (data.Response === "Error") {
+              console.error("Historical API Error:", data.Message);
+              renderFallbackChart();
+              return;
+            }
+            const prices = data.Data.Data;
+            const labels = prices.map(item => new Date(item.time * 1000).toLocaleDateString("en-US", { month: "short", year: "numeric" }));
+            const ratios = prices.map(item => (1000000 / item.close).toFixed(2));
+            allPrices = prices.concat(allPrices);
+            allLabels = labels.concat(allLabels);
+
+            if (remainingDays > maxLimit) {
+              const newToTs = prices[0].time - 24 * 3600;
+              fetchChunk(newToTs, remainingDays - maxLimit);
+            } else {
+              renderChart(allLabels.reverse(), allPrices.reverse().map(item => (1000000 / item.close).toFixed(2)));
+            }
+          },
+          error: function(xhr, status, error) {
+            console.error("Historical AJAX Error:", status, error, xhr.responseText);
+            renderFallbackChart();
+          }
+        });
+      }
+
+      fetchChunk(endDate, days);
+    }
+
+    function renderFallbackChart() {
+      const labels = [];
+      const ratios = [];
+      const startDate = new Date('2017-11-26');
+      const endDate = new Date('2025-05-20');
+      const days = Math.ceil((endDate - startDate) / (1000 * 3600 * 24)) / 12; // Monthly intervals
+      for (let i = 0; i <= days; i++) {
+        const date = new Date(startDate.getTime());
+        date.setMonth(startDate.getMonth() + i * 12);
+        labels.push(date.toLocaleDateString("en-US", { month: "short", year: "numeric" }));
+      }
+      // Simulated ratios: 110 (2017) to 9.36 (2025), with peaks/dips
+      ratios.push(110, 50, 312, 100, 50, 14.5, 20, 15, 9.36); // Approx. historical trend
+      renderChart(labels, ratios);
+    }
+
+    function renderChart(labels, ratios) {
+      const ctx = document.getElementById('satsRatioChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: '1 cent is worth this many sats',
+            data: ratios,
+            borderColor: '#ff0000',
+            backgroundColor: 'rgba(255, 0, 0, 0.2)',
+            fill: true,
+            tension: 0.1,
+            yAxisID: 'y'
+          }, {
+            label: '1 sat is worth this many cents',
+            data: ratios.map(ratio => 1 / ratio),
+            borderColor: '#f28c38',
+            backgroundColor: 'rgba(242, 140, 56, 0.2)',
+            fill: true,
+            tension: 0.1,
+            yAxisID: 'y1'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              title: { 
+                display: true, 
+                text: 'Date (Since Satoshi Day concept: Nov 26, 2017)'
+              },
+              ticks: { maxTicksLimit: 8, callback: function(value, index) { return labels[index]; } },
+              reverse: true
+            },
+                         y: {
+               type: 'linear',
+               display: true,
+               position: 'left',
+               title: { 
+                 display: true, 
+                 text: '1 cent is worth this many sats',
+                 color: '#ff0000'
+               },
+               beginAtZero: false,
+               suggestedMin: Math.min(...ratios) * 0.9,
+               suggestedMax: Math.max(...ratios) * 1.1
+             },
+            y1: {
+               type: 'linear',
+               display: true,
+               position: 'right',
+               title: { 
+                 display: true, 
+                 text: '1 sat is worth this many cents',
+                 color: '#f28c38'
+               },
+               beginAtZero: false,
+              suggestedMin: Math.min(...ratios.map(ratio => 1 / ratio)) * 0.9,
+              suggestedMax: Math.max(...ratios.map(ratio => 1 / ratio)) * 1.1,
+               grid: {
+                 drawOnChartArea: false,
+               },
+             }
+          },
+          plugins: {
+            legend: { display: true },
+            title: { 
+              display: true, 
+              text: 'Penny purchasing power in red. Sat purchasing power in orange.'
+            }
+          }
+        }
+      });
+    }
+
+    function parseNumber(str) {
+      return parseFloat(str.replace(/,/g, "")) || 0;
+    }
+
+    function formatNumber(num, decimals = 0) {
+      return num.toLocaleString("en-US", {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals
+      });
+    }
+
+    function fiatConvert() {
+      const form = document.unitconverter;
+      const fiatValue = parseFloat(form.fiatValue.value) || 0;
+      const satoshiValue = (fiatValue * 100000000) / currentPrice;
+      form.satoshi.value = satoshiValue.toFixed(2);
+    }
+
+    function satoshiConvert() {
+      const form = document.unitconverter;
+      const satoshiValue = parseFloat(form.satoshi.value) || 0;
+      const fiatValue = (satoshiValue * currentPrice) / 100000000;
+      form.fiatValue.value = fiatValue.toFixed(2);
+    }
+
+    function renderProgressCharts() {
+      if (!currentPrice || !isFinite(currentPrice) || currentPrice <= 0) {
+        return; // wait until price is loaded
+      }
+      // Calculate progress based on current price
+      const currentRatio = 1000000 / currentPrice; // sats per penny
+      const progressPercentage = Math.min((1 / currentRatio) * 100, 100); // Convert to percentage
+      const remainingPercentage = Math.max(100 - progressPercentage, 0);
+      
+      // Update progress text
+      document.getElementById('currentProgress').textContent = progressPercentage.toFixed(2) + '%';
+      document.getElementById('remainingProgress').textContent = remainingPercentage.toFixed(2) + '%';
+      
+      // Create progress chart
+      const progressCtx = document.getElementById('progressChart').getContext('2d');
+      new Chart(progressCtx, {
+        type: 'line',
+        data: {
+          labels: ['2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025'],
+          datasets: [{
+            label: 'Progress to Satoshi Day',
+            data: [0, 0.1, 0.3, 0.8, 2.1, 1.8, 3.2, 4.5, progressPercentage],
+            borderColor: '#f28c38',
+            backgroundColor: 'rgba(242, 140, 56, 0.2)',
+            fill: true,
+            tension: 0.1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              title: { 
+                display: true, 
+                text: 'Year'
+              }
+            },
+            y: {
+              title: { 
+                display: true, 
+                text: 'Progress to Satoshi Day (%)',
+                color: '#333'
+              },
+              beginAtZero: true,
+              max: 100,
+              ticks: {
+                callback: function(value) {
+                  return value + '%';
+                }
+              }
+            }
+          },
+          plugins: {
+            legend: { display: true },
+            title: { 
+              display: true, 
+              text: 'Progress Toward Satoshi Day (1 sat = 1 penny)'
+            }
+          }
+        }
+      });
+
+             // Create circular progress chart
+       const circularCtx = document.getElementById('circularProgressChart').getContext('2d');
+       const btcProgressPercentage = Math.min((currentPrice / 1000000) * 100, 100);
+       
+       new Chart(circularCtx, {
+         type: 'doughnut',
+         data: {
+           labels: ['Progress to $1M', 'Remaining'],
+           datasets: [{
+             data: [btcProgressPercentage, 100 - btcProgressPercentage],
+             backgroundColor: [
+               '#f28c38',
+               '#e0e0e0'
+             ],
+             borderWidth: 0
+           }]
+         },
+         options: {
+           responsive: true,
+           maintainAspectRatio: false,
+           cutout: '70%',
+           plugins: {
+             legend: { display: true },
+             title: { 
+               display: true, 
+               text: 'Bitcoin Price Progress to $1M: ' + btcProgressPercentage.toFixed(2) + '%'
+             },
+             tooltip: {
+               callbacks: {
+                 label: function(context) {
+                   if (context.label === 'Progress to $1M') {
+                     return 'Current: $' + currentPrice.toLocaleString() + ' (' + btcProgressPercentage.toFixed(2) + '%)';
+                   } else {
+                     return 'Remaining: $' + (1000000 - currentPrice).toLocaleString() + ' (' + (100 - btcProgressPercentage).toFixed(2) + '%)';
+                   }
+                 }
+               }
+             }
+           }
+         }
+       });
+
+      // Create mountain chart with vertical axis as price up to $1M
+      const mountainCtx = document.getElementById('mountainChart').getContext('2d');
+
+      // X axis will be an arbitrary distance (0-100). Y axis is price ($0 -> $1,000,000)
+      const mountainLabels = Array.from({ length: 101 }, (_, i) => i.toString());
+      const summitPrice = 1000000;
+
+      // Build a smooth ascent curve that reaches $1M at the end (index 100)
+      const mountainData = mountainLabels.map((_, i) => {
+        const x = i / 100; // 0..1
+        // Gentle slope then steeper near the summit, scaled to $1M
+        const baseShape = x < 0.7
+          ? Math.pow(x / 0.7, 0.6) * 0.6
+          : 0.6 + Math.pow((x - 0.7) / 0.3, 1.4) * 0.4;
+        return Math.min(baseShape * summitPrice, summitPrice);
+      });
+
+      // Horizontal marker at the current price
+      const climberLine = Array.from({ length: mountainLabels.length }, () => currentPrice);
+
+      // Single-point marker for the climber at the nearest x-position to current price
+      const climberIndex = mountainData.findIndex(y => y >= currentPrice);
+      const climberX = climberIndex === -1 ? mountainLabels.length - 1 : climberIndex;
+      const climberPoint = mountainLabels.map((_, idx) => (idx === climberX ? currentPrice : null));
+
+      new Chart(mountainCtx, {
+        type: 'line',
+        data: {
+          labels: mountainLabels,
+          datasets: [
+            {
+              label: 'Mountain Path (to $1M)',
+              data: mountainData,
+              borderColor: '#8B4513',
+              backgroundColor: 'rgba(139, 69, 19, 0.25)',
+              fill: true,
+              tension: 0.35,
+              pointRadius: 0
+            },
+            {
+              label: 'Current Price',
+              data: climberLine,
+              borderColor: '#FF6B35',
+              backgroundColor: '#FF6B35',
+              borderWidth: 2,
+              fill: false,
+              pointRadius: 0
+            },
+            {
+              label: 'Climber',
+              data: climberPoint,
+              borderColor: '#FF6B35',
+              backgroundColor: '#FF6B35',
+              pointRadius: 7,
+              pointHoverRadius: 9,
+              showLine: false
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: 'Distance to Summit'
+              },
+              ticks: {
+                maxTicksLimit: 6,
+                callback: function(value) { return value + '%'; }
+              }
+            },
+            y: {
+              title: {
+                display: true,
+                text: 'Bitcoin Price (USD)'
+              },
+              beginAtZero: true,
+              suggestedMax: summitPrice,
+              max: summitPrice,
+              ticks: {
+                callback: function(value) {
+                  if (value >= 1000000) return '$1M';
+                  if (value >= 1000) return '$' + (value / 1000) + 'K';
+                  return '$' + value;
+                }
+              }
+            }
+          },
+          plugins: {
+            legend: { display: true },
+            title: {
+              display: true,
+              text: 'Bitcoin Mountain: $' + currentPrice.toLocaleString() + ' on the ascent to $1,000,000'
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  if (context.dataset.label === 'Current Price') {
+                    return 'Current: $' + currentPrice.toLocaleString();
+                  }
+                  if (context.dataset.label === 'Climber') {
+                    return 'Climber at: $' + currentPrice.toLocaleString();
+                  }
+                  return 'Path: $' + Math.round(context.parsed.y).toLocaleString();
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Fun Satoshi Bitcoin Converter</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="manifest" href="manifest.json">
+    <style>
+    body {
+      background: #f6f6f6;
+      max-width: 750px;
+      margin: 40px auto;
+      padding: 0 22px;
+      font: 18px/1.5 -apple-system, BlinkMacSystemFont, /* MacOS and iOS */
+                   'avenir next', avenir, /* MacOS and iOS */
+                   'Segoe UI', /* Windows */
+                   'lucida grande', /* Older MacOS */
+                   'helvetica neue', helvetica, /* Older MacOS */
+                   'Fira Sans', /* Firefox OS */
+                   roboto, noto, /* Google stuff */
+                   'Droid Sans', /* Old Google stuff */
+                   cantarell, oxygen, ubuntu, /* Linux stuff */
+                   'franklin gothic medium', 'century gothic', /* Windows stuff */
+                   'Liberation Sans', /* Linux */
+                   sans-serif; /* Everything else */;
+      color: #222;
+    }
+
+supersize {  /* this is fancified text, but it can be named as anything */
+    font-style: normal;
+    font-size: 120%;
+    color: #ff8c00;
+    text-transform: uppercase;
+}
+smalltype {  /* this is smallsized font text, but it can be named as anything. Include it with <p class="smalltype">You can use code to get "smalltype" <smalltype>like this text</smalltype>*/
+    font-style: normal;
+    font-size: 65%;
+    color: #000000;
+    /* text-transform: uppercase; */
+}
+      
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: #333333;
+  font-weight: bold;
+  line-height: 1.2;
+  margin-bottom: 1em;
+  margin-top: 2em;
+}
+h1 {
+  font-size: 2.2em;
+  text-align: center;
+}
+h2 {
+  font-size: 1.8em;
+  border-bottom: solid 0.1rem firebrick;
+}
+h3 {
+  font-size: 1.5em;
+}
+h4 {
+  font-size: 1.3em;
+  text-decoration: underline;
+}
+h5 {
+  font-size: 1.2em;
+  font-style: italic;
+}
+h6 {
+  font-size: 1.1em;
+  margin-bottom: 0.5rem;
+  color: #555555;
+}
+    img.centered {
+    display: block;
+    margin-left: auto;
+    margin-right: auto }
+}
+    }</style>
+
+<style>
+  table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+  td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+  }
+  
+  tr:nth-child(even) {
+    background-color: #eeeeee;
+  }
+  </style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+  </head>
+
+  <body onload="init()">
+
+
+    
+<a name="home_top_page"></a>
+  <center>
+    <div class="w3-container">
+      <a href="../index.html" class="w3-button w3-round-large w3-orange">   &#x30B7   Satoshi Bitcoin Converter.com</a><br>
+    </div>
+    <p class="smalltype" style="text-align:center"><smalltype>SBC version 8</smalltype></p>
+  </center>
+
+<h3 id="about-page">Just for <span style="color:darkorange">Fun</span></h3>
+
+<h6 style="text-align:left">To the moon.</h6>
+
+<p>Gravity on the moon is 16.6% of that here on Earth. So, things weigh much less on the moon.</p>
+
+<table border="0" align="center">
+  <tr>
+    <th>Item</th>
+    <th>On the Earth</th>
+    <th>On the Moon</th>
+    <th>Value</th>
+  </tr>
+  <tr>
+    <td>You</td>
+    <td>enter weight</td>
+    <td>16.6% of weight</td>
+    <td>16.6% physically, 100% on the inside</td>
+  </tr>
+  <tr>
+    <td>Gold</td>
+    <td>1 ounce</td>
+    <td>0.166 ounce</td>
+    <td>16.6% of current price</td>
+  </tr>
+  <tr>
+    <td>Bitcoin</td>
+    <td>67,000</td>
+    <td>67,000</td>
+    <td>67,000</td>
+  </tr>
+  <tr>
+    <td>BTC</td>
+    <td>1</td>
+    <td>1</td>
+    <td>1</td>
+  </tr>
+</table>
+
+
+
+<table border="0" align="center">
+    <form name="BTCunitconverter">
+    <tbody>
+    <tr>
+        <th>Item</th>
+        <th>On the Earth</th>
+        <th>On the Moon</th>
+        <th>Equals</th>
+        <th>Earth Value</th>
+        <th>Moon Value</th>
+    </tr>
+    <tr>
+        <td>You</td>
+        <td><input type="number" onkeyup="BTCconvert()" value="" name="your_entered_weight" size="12"> pounds</td>
+        <td>x 16% of Earth-weight =</td>
+        <td><input type="number" onkeyup="BTCconvert()" value="" name="your_moon_weight" size="12"> pounds on the moon</td>
+        <td>1 you</td>
+        <td>1 you, but much lighter</td>
+    </tr>
+    <tr>
+        <td>Gold</td>
+        <td><input type="number" onkeyup="BTCconvert()" value="" name="your_entered_weight" size="12"> pounds</td>
+        <td>x 16% of Earth-weight =</td>
+        <td><input type="number" onkeyup="BTCconvert()" value="" name="your_moon_weight" size="12"> pounds on the moon</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Bitcoin</td>
+        <td><input type="number" onkeyup="BTCconvert()" value="" name="BTC" size="12"> &#x0E3F BTC<small> - bitcoin</small></td>
+        <td><input type="number" onkeyup="satoshiconvert()" value="" name="satoshi" size="12"> &#x30B7 sats</td>
+        <td><input type="number" onkeyup="LiveConvert()" value="$" name="LiveConvert" size="12"> &#8776; <a href="FiatToBTC/USDtoBTC.html">USD</a></td>
+        <td></td>
+        <td></td>
+    </tr>
+    </tbody>
+    </form>
+    </table>
+
+
+
+
+    <center>
+    <div id="BTCPrice"/>Loading current price... If stuck here, try a different browser, see Developer notes.</div>
+    <div id="CurrentPrice"/></div>
+    </center>
+
+    
+    <script language="JavaScript">
+      $.getJSON("https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=USD", function(data){
+                $("#BTCPrice").text(data["USD"].toFixed(2));
+            }).fail(function( dat, textStatus, error ) {
+                        var err = textStatus + ", " + error;
+                        alert(err);
+            });
+    
+    var CurrentPrice = document.getElementById('BTCPrice');
+        CurrentPrice.innerHTML = BTCPrice.innerHTML;
+    
+    /*
+    cm/inch/feet converter - credit must stay intact for use
+    By Ada Shimar ada@chalktv.com
+    For this script and more,
+    Visit http://javascriptkit.com
+    */
+    function BTCconvert(){
+    with (document.BTCunitconverter){
+    satoshi.value = (BTC.value*100000000);
+    LiveConvert.value = (BTC.value*CurrentPrice.innerHTML);
+    }
+    }
+    function satoshiconvert(){
+    with (document.BTCunitconverter){
+    BTC.value = (satoshi.value/100000000);
+    LiveConvert.value = (satoshi.value*CurrentPrice.innerHTML/100000000);
+    }
+    }
+    function LiveConvert(){
+    with (document.BTCunitconverter){
+    LiveConvert.value = (CurrentPrice.innerHTML);
+    }
+    }
+    </script>
+
+
+
+
+
+
+<center>
+<p>
+<img src="../img/icon_120.png" border="0" width=18>
+</center>
+
+
+<!-- Start of StatCounter Code for Default Guide -->
+<script type="text/javascript">
+var sc_project=9064341; 
+var sc_invisible=1; 
+var sc_partition=35; 
+var sc_security="4159c4ae"; 
+</script>
+<script type="text/javascript" src="https://www.statcounter.com/counter/counter_xhtml.js"></script><noscript><div class="statcounter"><a href="https://www.statcounter.com/" target="_blank"><img class="statcounter" src="https://c36.statcounter.com/9064341/0/4159c4ae/1/" alt="hit counter html code" ></a></div></noscript>
+<!-- End of StatCounter Code for Default Guide -->
+
+<p style="text-align:center"><a href="#home_top_page">Jump to top of page.</a></p>
+</body>
+</html>

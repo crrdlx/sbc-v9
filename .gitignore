@@ -1,0 +1,16 @@
+# Ignore a specific file
+file1.html
+file2.html
+
+# Ignore a directory
+archive/
+
+# Ignore all .log files - be sure to uncomment out to activate
+#*.log
+
+# Ignore all .txt files in a specific directory
+#docs/*.txt
+
+# Ignore everything in a directory except one file
+#temp/*
+#!temp/important.txt

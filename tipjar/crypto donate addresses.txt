@@ -1,0 +1,29 @@
+﻿Donate crypto to the tipjar. Public addresses:
+==============================================
+
+Coinbase
+=======
+BTC-LN
+3BMehB4zAWmwQzqUfLqtLAPCzZB6Piuiwz
+
+
+
+Exodus wallet
+===========
+Bitcoin (BTC)
+bc1q47vjre2r6cuuxjxyy6yujzx04ak25glmtxyzs6
+
+Bitcoin Cash (BCH)
+qrdt5wfzyq30ta8pzt04ct3eyayzwlvnkuegzqylg2
+
+Ethereum (ETH)
+0x522D2c35aDa26EbE46D30fAE71a12dD5397bB9A8
+
+Litecoin (LTC)
+LRURDmwUR2Ymd1dfo1SGQgzAxTcJqJvfz4
+
+Dash (DASH)
+XhaWa9wLfTEoRoHSKNJWwghxFsAD1TZuBR
+
+Dogecoin (DOGE)
+DFJv8NH7x1YupLP2yyqbCkpi6DYifqVNWF

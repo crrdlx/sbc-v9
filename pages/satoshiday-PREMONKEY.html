@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Satoshi Day - Satoshi Bitcoin Converter</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="manifest" href="manifest.json">
+    <style>
+    body {
+      background: #f6f6f6;
+      max-width: 750px;
+      margin: 40px auto;
+      padding: 0 22px;
+      font: 18px/1.5 -apple-system, BlinkMacSystemFont, /* MacOS and iOS */
+                   'avenir next', avenir, /* MacOS and iOS */
+                   'Segoe UI', /* Windows */
+                   'lucida grande', /* Older MacOS */
+                   'helvetica neue', helvetica, /* Older MacOS */
+                   'Fira Sans', /* Firefox OS */
+                   roboto, noto, /* Google stuff */
+                   'Droid Sans', /* Old Google stuff */
+                   cantarell, oxygen, ubuntu, /* Linux stuff */
+                   'franklin gothic medium', 'century gothic', /* Windows stuff */
+                   'Liberation Sans', /* Linux */
+                   sans-serif; /* Everything else */;
+      color: #222;
+    }
+
+supersize {  /* this is fancified text, but it can be named as anything */
+    font-style: normal;
+    font-size: 120%;
+    color: #ff8c00;
+    text-transform: uppercase;
+}
+smalltype {  /* this is smallsized font text, but it can be named as anything. Include it with <p class="smalltype">You can use code to get "smalltype" <smalltype>like this text</smalltype>*/
+    font-style: normal;
+    font-size: 65%;
+    color: #000000;
+    /* text-transform: uppercase; */
+}
+      
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: #333333;
+  font-weight: bold;
+  line-height: 1.2;
+  margin-bottom: 1em;
+  margin-top: 2em;
+}
+h1 {
+  font-size: 2.2em;
+  text-align: center;
+}
+h2 {
+  font-size: 1.8em;
+  border-bottom: solid 0.1rem firebrick;
+}
+h3 {
+  font-size: 1.5em;
+}
+h4 {
+  font-size: 1.3em;
+  text-decoration: underline;
+}
+h5 {
+  font-size: 1.2em;
+  font-style: italic;
+}
+h6 {
+  font-size: 1.1em;
+  margin-bottom: 0.5rem;
+  color: #555555;
+}
+    img.centered {
+    display: block;
+    margin-left: auto;
+    margin-right: auto }
+}
+    }
+  table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+  td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+  }
+  
+  tr:nth-child(even) {
+    background-color: #dddddd;
+  }
+
+  .form-container {
+    max-width: 350px;
+    margin: 2em auto;
+    text-align: center;
+  }
+  .form-container table {
+    margin: 0 auto;
+    border-collapse: collapse;
+  }
+  .form-container td {
+    padding: 0.3em 0;
+    text-align: center;
+    background-color: #f6f6f6;  /* Match body background */
+  }
+  .form-container input {
+    text-align: right;  /* Align numbers to the right */
+    width: 150px;       /* Fixed width for alignment */
+    margin-right: 5px;  /* Space between input and label */
+  }
+  .form-container .unit-label {
+    display: inline-block;
+    width: 70px;        /* Fixed width for labels */
+    text-align: left;   /* Align labels to the left */
+  }
+  </style>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  </head>
+<body>
+<a name="home_top_page"></a>
+  <center>
+    <div class="w3-container">
+      <a href="../index.html" class="w3-button w3-round-large w3-orange">   &#x30B7   Satoshi Bitcoin Converter.com</a><br>
+    </div>
+    <p class="smalltype" style="text-align:center"><smalltype>SBC version 8</smalltype></p>
+  </center>
+
+<h3>Satoshi Day</h3>
+
+<p>
+<small>
+If Bitcoin indeed goes "to the moon" as many expect, the humble little satoshi will become the unit of trade for everyday matters. Right now, for much of the world, the U.S. dollar is the standard. But, things are changing.
+<p>When one satoshi equals one USD penny, call that day "Satoshi Day".
+<p>
+Following is the original suggestion for Satoshi Day from Nov. 26, 2017:<br>
+<p>
+<i><blockquote>
+Okay, since it needs to be done, and somebody's gotta do it, I'm naming the day when one satoshi is on even par with one USD penny as "<b>Satoshi Day</b>". The US dollar is the symbolic de facto fiat and the penny is the smallest unit. A satoshi is the smallest bitcoin unit. When 1 penny = 1 satoshi, we're there.
+<p>
+Things are not as far away as one might think. A single penny is worth only 110 satoshi right now. And with bitcoin rising, that satoshi-to-penny ratio is dropping. Maybe somebody with better math skills can figure out what one penny was worth in satoshi a year ago...must have been a few hundred satoshi to one penny. It's happening.
+<p>
+Traditions will be needed when the Satoshi Day comes. Fireworks? Songs? Lighting your favorite fiat bill on fire and launching it with one of those Chinese lantern things?
+</blockquote></i>
+<p></p>
+Read the original post, predict when it will happen, or offer your own suggestions for Satoshi Day celebrations on: 
+<a href="https://www.reddit.com/r/Bitcoin/comments/7flcw4/satoshi_day_when_one_usd_penny_equals_one_satoshi/" target="_blank">Reddit post</a> | <a href="https://bitcointalk.org/index.php?topic=2464147.msg25232749#msg25232749" target="_blank">BitcoinTalk.org post.</a><br> 
+</p>
+
+<h4>Current Satoshi-to-Penny Ratio</h4>
+<p style="text-align: center;">See how many sats one penny is worth right now:</p>
+
+<div class="form-container">
+  <table border="0" cellpadding="0" cellspacing="0">
+    <form name="pennyconverter">
+      <tbody>
+        <tr>
+          <td>
+            <input type="text" inputmode="numeric" onkeyup="usdConvert()" value="0.01" name="usd" size="12">
+            <span class="unit-label">$ USD</span>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <input type="text" inputmode="numeric" onkeyup="satoshiConvert()" value="" name="satoshi" size="12">
+            <span class="unit-label">シ sats</span>
+          </td>
+        </tr>
+      </tbody>
+    </form>
+  </table>
+</div>
+
+<div style="text-align: center;">
+  <div id="BTCPrice">Loading current price...</div>
+</div>
+<p>
+  Over time, watch the number of sats drop (meaning pennies are <i>less</i> valuable, sats are <i>more</i> valuable). Eventually, when one Bitcoin is worth $1M, the penny-to-sat ratio will be 1:1. That'll be Satoshi Day. 🚀 🌙
+</p>
+
+<center>
+<img src="../img/icon_120.png" border="0" width=18>
+</center>
+
+<p style="text-align:center"><a href="#home_top_page">Jump to top of page.</a></p>
+
+<script language="JavaScript">
+  let currentPrice = 0;
+
+  // Initialize on page load
+  $(document).ready(function() {
+    updatePrice();
+  });
+
+  function updatePrice() {
+    $.ajax({
+      url: "https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=USD",
+      method: "GET",
+      success: function(data) {
+        currentPrice = parseFloat(data.USD);
+        $("#BTCPrice").text("Current BTC Price: $" + currentPrice.toLocaleString());
+        usdConvert(); // Initial conversion for pre-loaded penny value
+      },
+      error: function() {
+        $("#BTCPrice").text("Error loading price - please refresh");
+      }
+    });
+  }
+
+  function parseNumber(str) {
+    return parseFloat(str.replace(/,/g, "")) || 0;
+  }
+
+  function formatNumber(num, decimals = 0) {
+    return num.toLocaleString("en-US", {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals
+    });
+  }
+
+  function usdConvert() {
+    const form = document.pennyconverter;
+    const usdValue = parseNumber(form.usd.value);
+    const satoshiValue = (usdValue / currentPrice) * 100000000;
+    form.satoshi.value = formatNumber(satoshiValue, 0);
+  }
+
+  function satoshiConvert() {
+    const form = document.pennyconverter;
+    const satoshiValue = parseNumber(form.satoshi.value);
+    const usdValue = (satoshiValue * currentPrice) / 100000000;
+    form.usd.value = formatNumber(usdValue, 2);
+  }
+</script>
+
+<!-- StatCounter Code -->
+<script type="text/javascript">
+var sc_project=9064341; 
+var sc_invisible=1; 
+var sc_partition=35; 
+var sc_security="4159c4ae"; 
+</script>
+<script type="text/javascript" src="https://www.statcounter.com/counter/counter_xhtml.js"></script>
+<noscript><div class="statcounter"><a href="https://www.statcounter.com/" target="_blank"><img class="statcounter" src="https://c36.statcounter.com/9064341/0/4159c4ae/1/" alt="hit counter html code"></a></div></noscript>
+
+</body>
+</html>

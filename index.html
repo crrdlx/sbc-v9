@@ -1,262 +1,118 @@
 <!doctype html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <title>Satoshi Bitcoin Converter v9</title>
-  <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f6f6f6">
-  <meta name="description"
-    content="Convert between Bitcoin, altcoins, satoshis, and fiat currencies like USD, GBP, and more.">
+  <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="description" content="Convert between Bitcoin, altcoins, satoshis, and fiat currencies like USD, GBP, and more.">
   <link rel="icon" type="image/png" href="img/favicon.png">
   <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  
   <script src="config.js"></script>
   <script src="src/App.js"></script>
   <script src="src/main.js"></script>
-  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-  <link rel="icon" type="image/ico" href="https://sbc-v9.vercel.app/favicon.ico">
+  
+  <link rel="stylesheet" href="src/style.css">
   <style>
-    html {
-      font-size: medium;
-    }
-
-    body {
-      background-color: #f6f6f6;
-      color: #330;
-      font-family: verdana, georgia, times, serif;
-      max-width: 80em;
-      margin: 0 auto;
-      padding: 0 1em;
-      font-size: 1rem;
-      line-height: 1.4;
-    }
-
-    a {
-      color: #1e6b8c;
-      font-size: 1em;
-      text-decoration: none;
-      transition: color 0.3s linear 0.1s, background-color 0.3s linear 0.1s;
-    }
-
-    a:visited {
-      color: #6f32ad;
-    }
-
-    a:hover {
-      background: #b6cff9;
-      text-decoration: underline;
-    }
-
-    a:active {
-      background-color: #427fed;
-      color: white;
-    }
-
-    h1 {
-      font-size: 2.2em;
-      text-align: center;
-    }
-
-    input[type=text] {
-      width: 135px;
-    }
-
-    select {
-      margin: 0.5em;
-      padding: 0.2em;
-    }
-
-    smalltype {
-      font-style: normal;
-      font-size: 65%;
-      color: #000000;
-    }
-
-    .nav-links,
-    .footer,
-    .price-info {
-      text-align: center;
-      margin: 0.5em 0;
-    }
-
-    .nav-links a,
-    .footer a {
-      margin: 0 0.5em;
-    }
-
-    .form-container {
-      max-width: 350px;
-      margin: 0 auto;
-      text-align: left;
-    }
-
-    .form-container td {
-      padding: 0.3em 0;
-    }
-
-    #customCoin,
-    #customFiat {
-      width: 60px;
-      margin: 0.5em;
-      padding: 0.2em;
-      text-transform: uppercase;
-    }
-
-    #coinDisplay {
-      width: 150px;
-      display: inline-block;
-      vertical-align: middle;
-    }
-
-    .beta-notice {
-      font-style: italic;
-      font-size: 0.8em;
-      color: #555;
-      margin: 0.5em 0;
-    }
-
-    .disclaimer {
-      font-style: italic;
-      font-size: 0.8em;
-      color: #555;
-      margin: 1em 0;
-    }
-
-    .visually-hidden {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
-    }
-
-    /* Mobile: allow zoom via viewport; larger tap targets */
-    @media (max-width: 600px) {
-      .form-container {
-        margin-left: auto;
-        margin-right: auto;
-        max-width: 100%;
-      }
-
-      input[type=text],
-      select {
-        min-height: 44px;
-        font-size: 1rem;
-      }
-    }
+    /* Index specific */
+    .selector-row { display: flex; gap: 1rem; margin-bottom: 2rem; }
+    .select-group { flex: 1; display: flex; flex-direction: column; gap: 0.5rem; }
+    .select-group label { font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+    select, input[type="text"] { background: var(--input-bg); border: 1px solid var(--card-border); color: var(--text-main); font-family: inherit; padding: 0.75rem 1rem; border-radius: 12px; font-size: 1rem; outline: none; transition: all 0.3s ease; width: 100%; }
+    select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 1rem center; background-size: 1em; }
+    select:focus, input[type="text"]:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-glow); }
+    .converter-row { margin-bottom: 1.5rem; position: relative; }
+    .converter-row label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted); }
+    .input-wrapper { position: relative; display: flex; align-items: center; }
+    .symbol-prefix { position: absolute; left: 1rem; font-size: 1.2rem; color: var(--text-muted); font-family: 'Space Grotesk', sans-serif; pointer-events: none; }
+    .converter-row input { font-family: 'Space Grotesk', monospace; font-size: 1.5rem; font-weight: 700; padding: 1rem 1rem 1rem 2.5rem; height: 64px; background: rgba(0,0,0,0.2); }
+    .unit-badge { background: rgba(255,255,255,0.08); padding: 0.3rem 0.6rem; border-radius: 8px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px; pointer-events: none; }
+    .price-ticker { margin-top: 2rem; text-align: center; padding-top: 1.5rem; border-top: 1px solid var(--card-border); }
+    .price-ticker p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem; }
+    .live-price { font-family: 'Space Grotesk', monospace; font-size: 2rem; font-weight: 700; color: var(--accent); text-shadow: 0 0 15px var(--accent-glow); transition: color 0.5s ease; }
+    .sats-per-dollar { margin-top: 1rem; text-align: center; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); color: #34d399; padding: 0.75rem; border-radius: 12px; font-weight: 600; font-size: 0.9rem; animation: pulse 2s infinite ease-in-out; }
+    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
+    .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--accent); color: #000; padding: 0.75rem 2rem; border-radius: 50px; font-weight: 700; opacity: 0; transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); z-index: 1000; box-shadow: 0 10px 25px var(--accent-glow); }
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    .custom-inputs { display: flex; gap: 0.5rem; margin-top: 0.5rem;}
+    .custom-inputs input { padding: 0.6rem 1rem; font-size: 0.85rem; background: rgba(0,0,0,0.2); }
+    @media (max-width: 480px) { .glass-card { padding: 1.5rem; border-radius: 20px; } .converter-row input { font-size: 1.25rem; } }
   </style>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
 
 <body onload="init()">
   <header>
-    <div class="w3-container" style="text-align: center;">
-      <a href="index.html" class="w3-button w3-round-large w3-orange"> シ Satoshi Bitcoin Converter.com</a>
-    </div>
-    <p style="text-align: center;" class="beta-notice">SBC-v9</p>
+    <h1><a href="index.html" style="text-decoration:none">シ Satoshi Bitcoin Converter</a></h1>
+    <p style="font-size:0.8rem; color:var(--text-muted); margin-top:-1.2rem; font-weight:600;">v9</p>
   </header>
 
   <main>
-    <div role="group" aria-label="Coin and fiat selection" style="text-align: center;">
-      <label for="altcoin" class="visually-hidden">Coin</label>
-      <select id="altcoin" onchange="updatePrices()" aria-label="Coin">
-        <option value="BTC" selected>฿ Bitcoin (BTC)</option>
-        <option value="ETH">Ξ Ethereum (ETH)</option>
-        <option value="LTC">Ł Litecoin (LTC)</option>
-        <option value="XRP">ꭓ Ripple (XRP)</option>
-        <option value="SOL">◎ Solana (SOL)</option>
-      </select>
-      <label for="customCoin" class="visually-hidden">Custom coin ticker</label>
-      <input type="text" id="customCoin" placeholder="alt" autocomplete="off"
-        aria-label="Custom coin ticker" onkeyup="if(this.value) updatePrices();" onchange="updatePrices()">
-      <label for="fiat" class="visually-hidden">Secondary fiat</label>
-      <select id="fiat" onchange="updatePrices()" aria-label="Secondary fiat currency">
-        <option value="" selected>Fiat</option>
-        <option value="GBP">GBP</option>
-        <option value="EUR">EUR</option>
-        <option value="CAD">CAD</option>
-        <option value="AUD">AUD</option>
-        <option value="INR">INR</option>
-        <option value="JPY">JPY</option>
-        <option value="KRW">KRW</option>
-        <option value="CHF">CHF</option>
-      </select>
-      <label for="customFiat" class="visually-hidden">Custom fiat code</label>
-      <input type="text" id="customFiat" placeholder="fiat" autocomplete="off"
-        aria-label="Custom fiat currency code" onkeyup="if(this.value) updatePrices();" onchange="updatePrices()">
+    <div class="glass-card" id="mainCard">
+      <div class="selector-row">
+        <div class="select-group">
+          <label>Asset</label>
+          <select id="altcoin" onchange="handleCoinChange()">
+            <option value="BTC" selected>฿ Bitcoin (BTC)</option>
+            <option value="ETH">Ξ Ethereum (ETH)</option>
+            <option value="LTC">Ł Litecoin (LTC)</option>
+            <option value="XRP">ꭓ Ripple (XRP)</option>
+            <option value="SOL">◎ Solana (SOL)</option>
+          </select>
+          <div class="custom-inputs">
+             <input type="text" id="customCoin" placeholder="Ticker (e.g. DOGE)" onchange="handleCoinChange()">
+          </div>
+        </div>
+        
+        <div class="select-group">
+          <label>Fiat Currency</label>
+          <select id="fiat" onchange="handleCoinChange()">
+            <option value="USD" selected>$ USD</option>
+            <option value="GBP">£ GBP</option>
+            <option value="EUR">€ EUR</option>
+            <option value="CAD">C$ CAD</option>
+            <option value="AUD">A$ AUD</option>
+            <option value="JPY">¥ JPY</option>
+          </select>
+           <div class="custom-inputs">
+             <input type="text" id="customFiat" placeholder="Fiat (e.g. CHF)" onchange="handleCoinChange()">
+          </div>
+        </div>
+      </div>
+
+      <div class="converter-row">
+        <label>Crypto Amount <span id="coinLabel" class="unit-badge">BTC</span></label>
+        <div class="input-wrapper">
+          <span class="symbol-prefix" id="coinSymbolDisplay">฿</span>
+          <input type="text" id="input-coin" inputmode="decimal" autocomplete="off" placeholder="0.00">
+        </div>
+      </div>
+
+      <div class="converter-row">
+        <label>Satoshi Equivalent <span class="unit-badge">SATS</span></label>
+        <div class="input-wrapper">
+          <span class="symbol-prefix">シ</span>
+          <input type="text" id="input-sats" inputmode="numeric" autocomplete="off" placeholder="0">
+        </div>
+      </div>
+
+      <div class="converter-row">
+        <label>Fiat Value <span id="fiatLabel" class="unit-badge">USD</span></label>
+        <div class="input-wrapper">
+          <span class="symbol-prefix" id="fiatSymbolDisplay">$</span>
+          <input type="text" id="input-usd" inputmode="decimal" autocomplete="off" placeholder="0.00">
+        </div>
+      </div>
+
+      <div class="price-ticker">
+        <p>Current <span id="tickerName">Bitcoin</span> Price</p>
+        <div class="live-price" id="coinPrice">Loading...</div>
+        <div class="sats-per-dollar" id="satsPerDollar" style="display: none;">-- sats per $1</div>
+      </div>
     </div>
-
-    <div class="form-container">
-      <form name="unitconverter">
-        <table border="0" cellpadding="0" cellspacing="0">
-          <tbody>
-            <tr>
-              <td>
-                <label for="input-coin" class="visually-hidden">Amount in coin units</label>
-                <input id="input-coin" type="text" inputmode="decimal" onkeyup="coinConvert()" value="" name="coin"
-                  size="12" autocomplete="off">
-                <span id="coinDisplay">฿ BTC - Bitcoin</span>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <label for="input-sats" class="visually-hidden">Amount in satoshis</label>
-                <input id="input-sats" type="text" inputmode="numeric" onkeyup="satoshiConvert()" value="" name="satoshi"
-                  size="12" autocomplete="off">
-                シ sats
-              </td>
-            </tr>
-            <tr id="secondaryFiatRow">
-              <td>
-                <label for="input-secondary-fiat" class="visually-hidden">Amount in secondary fiat</label>
-                <input id="input-secondary-fiat" type="text" inputmode="decimal" onkeyup="secondaryFiatConvert()"
-                  value="" name="secondaryFiatValue" size="12" autocomplete="off">
-                ≈ <span id="secondaryFiatSymbol"></span> <span id="secondaryFiatName"></span>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <label for="input-usd" class="visually-hidden">Amount in US dollars</label>
-                <input id="input-usd" type="text" inputmode="decimal" onkeyup="usdConvert()" value="" name="usdValue"
-                  size="12" autocomplete="off">
-                ≈ $ USD
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </form>
-    </div>
-
-    <p class="price-info">
-      <small><small>
-          Approximate value of one <span id="coinNamePrice">BTC</span> at time of pageload (in <span
-            id="fiatNamePrice">USD</span>):
-        </small></small>
-    </p>
-    <div class="price-info"><big>
-        <div id="coinPrice">Loading current price...</div>
-      </big></div>
-    <div class="price-info"><span style="color:firebrick" id="fiatNameFooter">United States Dollar (USD)</span>
-    </div>
-
-    <p class="nav-links"><a href="javascript:document.location.reload();" aria-label="Refresh page and prices">
-        <img src="img/refresh.png" width="40" height="40" alt="" decoding="async">
-      </a></p>
-
-    <p class="nav-links"><small><small>
-          <a href="pages/about.html">About</a> |
-          <a href="pages/satoshiday.html">Satoshi Day</a> |
-          <a href="pages/dev_notes.html">Dev Notes</a> |
-          <a href="pages/grow.html">Grow</a> |
-          <a href="pages/tips.html">Tip Jar</a> 😃
-        </small></small></p>
-
-    <p class="footer"><small>Satoshi Bitcoin Converter - since 2013</small></p>
-    <p class="footer"><img src="img/icon_120.png" alt="" width="18" height="18" decoding="async"></p>
 
     <!-- StatCounter Code -->
     <script type="text/javascript">
@@ -271,190 +127,225 @@
             src="https://c36.statcounter.com/9064341/0/4159c4ae/1/" alt="hit counter html code"></a></div>
     </noscript>
 
-    <p class="disclaimer">Disclaimer: This web app is in beta. All figures should be double-checked or
-      cross-referenced with other sources. Satoshi Bitcoin Converter is not liable for any losses that might occur
-      due to errors or inaccuracies.</p>
+    <div class="footer-links">
+      <a href="pages/about.html">About</a>
+      <a href="pages/satoshiday.html">Satoshi Day</a>
+      <a href="pages/dev_notes.html">Dev Notes</a>
+      <a href="pages/grow.html">Grow</a>
+      <a href="pages/tips.html">Tip Jar 😃</a>
+    </div>
   </main>
+  
+  <div class="toast" id="toast">Copied!</div>
 
-    <script>
-      let altcoinSelected = "BTC"; // Default to Bitcoin
-      let fiatSelected = "";       // Secondary fiat (none selected by default)
-      let currentPriceUSD = 0;     // Price of selected altcoin in USD
-      let currentPriceSecondary = 0; // Price of selected altcoin in secondary fiat
-      let altcoinToBtcPrice = 0;   // Price of selected altcoin in BTC
+  <script>
+    const state = {
+      coin: 'BTC',
+      fiat: 'USD',
+      priceFiat: 0,
+      priceBtc: 1, 
+      isFetching: false
+    };
 
-      // Map ticker symbols to full names
-      const coinNames = {
-        "BTC": "Bitcoin",
-        "ETH": "Ethereum",
-        "LTC": "Litecoin",
-        "XRP": "Ripple",
-        "SOL": "Solana",
-        "DOGE": "Dogecoin",
-        "WLD": "Worldcoin",
-        "CBBTC": "Coinbase Wrapped BTC"
-      };
+    const coinSymbols = { BTC: "฿", ETH: "Ξ", LTC: "Ł", XRP: "ꭓ", SOL: "◎", DOGE: "Ð" };
+    const fiatSymbols = { USD: "$", GBP: "£", EUR: "€", CAD: "C$", AUD: "A$", INR: "₹", JPY: "¥", KRW: "₩", CHF: "CHF" };
+    
+    // UI Elements
+    const elements = {
+      inputCoin: document.getElementById('input-coin'),
+      inputSats: document.getElementById('input-sats'),
+      inputUsd: document.getElementById('input-usd'),
+      coinPrice: document.getElementById('coinPrice'),
+      satsPerDollar: document.getElementById('satsPerDollar'),
+      coinLabel: document.getElementById('coinLabel'),
+      fiatLabel: document.getElementById('fiatLabel'),
+      coinSymbolDisplay: document.getElementById('coinSymbolDisplay'),
+      fiatSymbolDisplay: document.getElementById('fiatSymbolDisplay'),
+      tickerName: document.getElementById('tickerName'),
+      toast: document.getElementById('toast'),
+    };
 
-      window.initSbcUi = function () {
-        document.getElementById("secondaryFiatRow").style.display = "none";
-        updatePrices();
-      };
+    const parseNum = (str) => {
+        if(!str) return 0;
+        let cleaned = str.toString().replace(/,/g, '');
+        if(cleaned.match(/[a-zA-Z]/)) return 0;
+        let val = parseFloat(cleaned);
+        return isNaN(val) ? 0 : val;
+    };
+    
+    const formatNum = (num, decimals) => {
+      if(num === 0) return "";
+      return new Intl.NumberFormat('en-US', {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals
+      }).format(num);
+    };
 
-      function updatePrices() {
-        let customCoin = document.getElementById("customCoin").value.trim().toUpperCase();
-        let customFiat = document.getElementById("customFiat").value.trim().toUpperCase();
-        altcoinSelected = customCoin || document.getElementById("altcoin").value;
+    window.initSbcUi = function () {
+      handleCoinChange();
+      setupEventListeners();
+    };
 
-        // If custom fiat field has content, use it; otherwise use dropdown
-        if (customFiat) {
-          fiatSelected = customFiat;
+    async function fetchPrices() {
+      if(state.isFetching) return;
+      state.isFetching = true;
+      elements.coinPrice.style.opacity = '0.5';
+
+      try {
+        const res = await fetch(`https://min-api.cryptocompare.com/data/price?fsym=${state.coin}&tsyms=${state.fiat},BTC`);
+        const data = await res.json();
+        
+        if (data.Response === "Error") {
+          elements.coinPrice.innerText = "API Error";
+          return;
+        }
+
+        state.priceFiat = parseFloat(data[state.fiat]) || 0;
+        state.priceBtc = parseFloat(data["BTC"]) || (state.coin === "BTC" ? 1 : 0);
+        
+        elements.coinPrice.innerText = `${fiatSymbols[state.fiat]||''}${formatNum(state.priceFiat, state.priceFiat < 1 ? 4 : 2)}`;
+        
+        // Sats per fiat calculator
+        if(state.priceBtc > 0 && state.priceFiat > 0) {
+            let oneFiatInCoin = 1 / state.priceFiat;
+            let oneFiatInBtc = oneFiatInCoin * state.priceBtc;
+            let satsPerFiat = oneFiatInBtc * 100000000;
+            elements.satsPerDollar.innerText = `${Math.round(satsPerFiat).toLocaleString()} sats per ${fiatSymbols[state.fiat]||''}1`;
+            elements.satsPerDollar.style.display = 'block';
         } else {
-          let dropdownFiat = document.getElementById("fiat").value;
-          fiatSelected = dropdownFiat; // Will be empty string if "Fiat" is selected
+            elements.satsPerDollar.style.display = 'none';
         }
 
-        // Force uppercase in input fields
-        document.getElementById("customCoin").value = customCoin;
-        document.getElementById("customFiat").value = customFiat;
+        recalculateFrom('coin');
+      } catch (err) {
+        console.error(err);
+        elements.coinPrice.innerText = "Network Error";
+      } finally {
+        state.isFetching = false;
+        elements.coinPrice.style.opacity = '1';
+      }
+    }
 
-        // Update UI labels
-        const coinSymbols = { BTC: "฿", ETH: "Ξ", LTC: "Ł", XRP: "ꭓ", SOL: "◎", DOGE: "Ð" };
-        const fiatSymbols = { USD: "$", GBP: "£", EUR: "€", CAD: "C$", AUD: "A$", INR: "₹", JPY: "¥", KRW: "₩", CHF: "CHF" };
+    function handleCoinChange() {
+      const customCoin = document.getElementById('customCoin').value.trim().toUpperCase();
+      const customFiat = document.getElementById('customFiat').value.trim().toUpperCase();
+      
+      state.coin = customCoin || document.getElementById('altcoin').value;
+      state.fiat = customFiat || document.getElementById('fiat').value;
 
-        // Combine symbol, ticker, and name for coin display
-        const symbol = coinSymbols[altcoinSelected] || "";
-        const name = coinNames[altcoinSelected] || altcoinSelected; // Fallback to ticker if name unknown
-        document.getElementById("coinDisplay").textContent = `${symbol} ${altcoinSelected} - ${name}`;
+      document.getElementById('customCoin').value = customCoin;
+      document.getElementById('customFiat').value = customFiat;
 
-        // Update secondary fiat display (hide row if no secondary fiat selected)
-        const secondaryFiatRow = document.getElementById("secondaryFiatRow");
-        if (fiatSelected && fiatSelected !== "USD") {
-          secondaryFiatRow.style.display = "";
-          document.getElementById("secondaryFiatSymbol").textContent = fiatSymbols[fiatSelected] || "";
-          document.getElementById("secondaryFiatName").textContent = fiatSelected;
-        } else {
-          secondaryFiatRow.style.display = "none";
+      elements.coinLabel.innerText = state.coin;
+      elements.fiatLabel.innerText = state.fiat;
+      elements.coinSymbolDisplay.innerText = coinSymbols[state.coin] || '';
+      elements.fiatSymbolDisplay.innerText = fiatSymbols[state.fiat] || '';
+      elements.tickerName.innerText = state.coin;
+
+      // Update theme colors
+      const root = document.documentElement;
+      if (state.coin === 'ETH') {
+        root.style.setProperty('--accent', '#8b5cf6');
+        root.style.setProperty('--accent-glow', 'rgba(139, 92, 246, 0.4)');
+      } else if (state.coin === 'SOL') {
+        root.style.setProperty('--accent', '#14b8a6');
+        root.style.setProperty('--accent-glow', 'rgba(20, 184, 166, 0.4)');
+      } else if (state.coin === 'LTC') {
+        root.style.setProperty('--accent', '#94a3b8');
+        root.style.setProperty('--accent-glow', 'rgba(148, 163, 184, 0.4)');
+      } else {
+        root.style.setProperty('--accent', '#f59e0b');
+        root.style.setProperty('--accent-glow', 'rgba(245, 158, 11, 0.4)');
+      }
+
+      fetchPrices();
+    }
+
+    function recalculateFrom(source) {
+      if(!state.priceFiat) return;
+
+      if (source === 'coin') {
+        let val = parseNum(elements.inputCoin.value);
+        if(val === 0 && !elements.inputCoin.value) {
+           elements.inputSats.value = ''; elements.inputUsd.value = ''; return;
         }
-
-        document.getElementById("coinNamePrice").textContent = altcoinSelected;
-        document.getElementById("fiatNamePrice").textContent = fiatSelected || "USD";
-        document.getElementById("fiatNameFooter").textContent = fiatSelected || "United States Dollar (USD)";
-
-        // Build API request - always fetch USD, plus secondary fiat if selected
-        let tsyms = "USD,BTC";
-        if (fiatSelected && fiatSelected !== "USD") {
-          tsyms += "," + fiatSelected;
+        let btcVal = val * state.priceBtc;
+        let satsVal = btcVal * 100000000;
+        let fiatVal = val * state.priceFiat;
+        
+        elements.inputSats.value = formatNum(satsVal, 0);
+        elements.inputUsd.value = formatNum(fiatVal, 2);
+      } 
+      else if (source === 'sats') {
+        let val = parseNum(elements.inputSats.value);
+        if(val === 0 && !elements.inputSats.value) {
+           elements.inputCoin.value = ''; elements.inputUsd.value = ''; return;
         }
+        let btcVal = val / 100000000;
+        let coinVal = btcVal / state.priceBtc;
+        let fiatVal = coinVal * state.priceFiat;
 
-        // Fetch price data
-        $.ajax({
-          url: `https://min-api.cryptocompare.com/data/price?fsym=${altcoinSelected}&tsyms=${tsyms}`,
-          method: "GET",
-          dataType: "json",
-          success: function (data) {
-            if (data.Response === "Error") {
-              $("#coinPrice").text("Error: Invalid symbol or API unavailable");
-              console.error("API Error:", data.Message);
-              return;
-            }
-            currentPriceUSD = parseFloat(data["USD"]) || 0;
-            currentPriceSecondary = parseFloat(data[fiatSelected]) || 0;
-            altcoinToBtcPrice = parseFloat(data["BTC"]) || (altcoinSelected === "BTC" ? 1 : 0);
+        elements.inputCoin.value = formatNum(coinVal, 8);
+        elements.inputUsd.value = formatNum(fiatVal, 2);
+      }
+      else if (source === 'fiat') {
+        let val = parseNum(elements.inputUsd.value);
+        if(val === 0 && !elements.inputUsd.value) {
+           elements.inputCoin.value = ''; elements.inputSats.value = ''; return;
+        }
+        let coinVal = val / state.priceFiat;
+        let btcVal = coinVal * state.priceBtc;
+        let satsVal = btcVal * 100000000;
 
-            // Display the main price (secondary fiat if selected, otherwise USD)
-            const displayPrice = (fiatSelected && fiatSelected !== "USD") ? currentPriceSecondary : currentPriceUSD;
-            $("#coinPrice").text(displayPrice.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+        elements.inputCoin.value = formatNum(coinVal, 8);
+        elements.inputSats.value = formatNum(satsVal, 0);
+      }
+    }
 
-            coinConvert(); // Recalculate on update
-          },
-          error: function (xhr, status, error) {
-            $("#coinPrice").text("Error: Unable to fetch prices - check connection or API");
-            console.error("AJAX Error:", status, error, xhr.responseText);
-          }
+    function setupEventListeners() {
+      // Inputs
+      elements.inputCoin.addEventListener('input', (e) => recalculateFrom('coin'));
+      elements.inputSats.addEventListener('input', (e) => recalculateFrom('sats'));
+      elements.inputUsd.addEventListener('input', (e) => recalculateFrom('fiat'));
+
+      // Clean on focus
+      [elements.inputCoin, elements.inputSats, elements.inputUsd].forEach(input => {
+        input.addEventListener('focus', () => {
+           if(input.value) {
+               input.value = input.value.replace(/,/g, '');
+           }
         });
-      }
-
-      // Helper function to remove commas and parse to number
-      function parseNumber(str) {
-        return parseFloat(str.replace(/,/g, "")) || 0;
-      }
-
-      // Helper function to format number with commas
-      function formatNumber(num, decimals = 0) {
-        return num.toLocaleString("en-US", {
-          minimumFractionDigits: decimals,
-          maximumFractionDigits: decimals
+        input.addEventListener('blur', () => {
+           recalculateFrom(input.id.replace('input-', ''));
         });
-      }
+      });
 
-      // Coin to satoshi and fiats
-      function coinConvert() {
-        const form = document.unitconverter;
-        const coinValue = form.coin.value.trim();
-        if (!coinValue) return; // Skip if coin field is empty
-        const parsedCoinValue = parseNumber(coinValue);
-        const satoshiValue = parsedCoinValue * altcoinToBtcPrice * 100000000;
-        const usdValue = parsedCoinValue * currentPriceUSD;
-        const secondaryFiatValue = parsedCoinValue * currentPriceSecondary;
+      // Copy on click of labels/symbols
+      document.querySelectorAll('.input-wrapper').forEach(wrapper => {
+        wrapper.addEventListener('dblclick', () => {
+           const input = wrapper.querySelector('input');
+           if(input.value) {
+               navigator.clipboard.writeText(input.value.replace(/,/g, ''));
+               showToast();
+           }
+        });
+      });
+    }
 
-        form.satoshi.value = formatNumber(satoshiValue, 0);
-        form.usdValue.value = formatNumber(usdValue, 2);
-        if (fiatSelected && fiatSelected !== "USD") {
-          form.secondaryFiatValue.value = formatNumber(secondaryFiatValue, 2);
+    function showToast() {
+      elements.toast.classList.add('show');
+      if (navigator.vibrate) navigator.vibrate(50);
+      setTimeout(() => {
+        elements.toast.classList.remove('show');
+      }, 2000);
+    }
+
+    // Fallback if PWA script fails
+    setTimeout(() => {
+        if(!elements.coinPrice.innerText || elements.coinPrice.innerText === "Loading...") {
+            window.initSbcUi();
         }
-      }
-
-      // Satoshi to coin and fiats
-      function satoshiConvert() {
-        const form = document.unitconverter;
-        const satoshiValue = form.satoshi.value.trim();
-        if (!satoshiValue) return; // Skip if satoshi field is empty
-        const parsedSatoshiValue = parseNumber(satoshiValue);
-        const coinValue = parsedSatoshiValue / (altcoinToBtcPrice * 100000000);
-        const usdValue = coinValue * currentPriceUSD;
-        const secondaryFiatValue = coinValue * currentPriceSecondary;
-
-        form.coin.value = formatNumber(coinValue, 8);
-        form.usdValue.value = formatNumber(usdValue, 2);
-        if (fiatSelected && fiatSelected !== "USD") {
-          form.secondaryFiatValue.value = formatNumber(secondaryFiatValue, 2);
-        }
-      }
-
-      // Secondary fiat to coin, satoshi, and USD
-      function secondaryFiatConvert() {
-        const form = document.unitconverter;
-        const secondaryFiatValue = form.secondaryFiatValue.value.trim();
-        if (!secondaryFiatValue) return; // Skip if fiat field is empty
-        const parsedSecondaryFiatValue = parseNumber(secondaryFiatValue);
-        const coinValue = parsedSecondaryFiatValue / currentPriceSecondary;
-        const satoshiValue = coinValue * altcoinToBtcPrice * 100000000;
-        const usdValue = coinValue * currentPriceUSD;
-
-        form.coin.value = formatNumber(coinValue, 8);
-        form.satoshi.value = formatNumber(satoshiValue, 0);
-        form.usdValue.value = formatNumber(usdValue, 2);
-      }
-
-      // USD to coin, satoshi, and secondary fiat
-      function usdConvert() {
-        const form = document.unitconverter;
-        const usdValue = form.usdValue.value.trim();
-        if (!usdValue) return; // Skip if USD field is empty
-        const parsedUsdValue = parseNumber(usdValue);
-        const coinValue = parsedUsdValue / currentPriceUSD;
-        const satoshiValue = coinValue * altcoinToBtcPrice * 100000000;
-        const secondaryFiatValue = coinValue * currentPriceSecondary;
-
-        form.coin.value = formatNumber(coinValue, 8);
-        form.satoshi.value = formatNumber(satoshiValue, 0);
-        if (fiatSelected && fiatSelected !== "USD") {
-          form.secondaryFiatValue.value = formatNumber(secondaryFiatValue, 2);
-        }
-      }
-
-      window.updatePrices = updatePrices;
-    </script>
+    }, 1000);
+  </script>
 </body>
-
 </html>

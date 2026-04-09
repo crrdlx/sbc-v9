@@ -32,10 +32,10 @@
     .converter-row input { font-family: 'Space Grotesk', monospace; font-size: 1.35rem; font-weight: 700; padding: 0.75rem 1rem 0.75rem 2.25rem; height: 56px; background: rgba(0,0,0,0.2); }
     .unit-badge { background: rgba(255,255,255,0.08); padding: 0.2rem 0.5rem; border-radius: 6px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px; pointer-events: none; }
     .price-ticker { margin-top: 1.25rem; text-align: center; padding-top: 1.25rem; border-top: 1px solid var(--card-border); }
-    .price-ticker p { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.25rem; }
+    .price-ticker p { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem; }
     
-    @keyframes pulse-orange { 0% { text-shadow: 0 0 5px var(--accent-glow); } 50% { text-shadow: 0 0 25px var(--accent-glow); color: #fbbf24; } 100% { text-shadow: 0 0 5px var(--accent-glow); } }
-    .live-price { font-family: 'Space Grotesk', monospace; font-size: 1.8rem; font-weight: 700; color: var(--accent); transition: color 0.5s ease; animation: pulse-orange 2s infinite ease-in-out; }
+    @keyframes pulse-box { 0% { box-shadow: 0 0 0 0 var(--accent-glow); } 60% { box-shadow: 0 0 0 6px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
+    .live-price { font-family: 'Space Grotesk', monospace; font-size: 1.8rem; font-weight: 700; color: var(--accent); border: 1px solid var(--accent); padding: 0.25rem 1.25rem; border-radius: 12px; display: inline-block; background: rgba(0,0,0,0.2); transition: color 0.5s ease; animation: pulse-box 4s infinite ease-out; }
     
     .sats-per-dollar { margin-top: 0.75rem; text-align: center; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); color: #34d399; padding: 0.6rem; border-radius: 12px; font-weight: 600; font-size: 0.85rem; }
     .refresh-btn { margin-top: 0.5rem; background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.5rem; transition: color 0.3s, transform 0.3s; display: inline-flex; align-items: center; justify-content: center; padding: 0.5rem; border-radius: 50%; }
@@ -115,10 +115,12 @@
       <div class="price-ticker">
         <p>Current <span id="tickerName">Bitcoin</span> Price</p>
         <div class="live-price" id="coinPrice">Loading...</div>
+        <div>
+          <button id="refreshBtn" onclick="forceFetchPrices()" class="refresh-btn" aria-label="Refresh price" title="Refresh Price">
+            <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+          </button>
+        </div>
         <div class="sats-per-dollar" id="satsPerDollar" style="display: none;">-- sats per $1</div>
-        <button id="refreshBtn" onclick="forceFetchPrices()" class="refresh-btn" aria-label="Refresh price" title="Refresh Price">
-          <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
-        </button>
       </div>
     </div>
 

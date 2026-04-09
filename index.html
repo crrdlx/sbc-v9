@@ -38,6 +38,10 @@
     .live-price { font-family: 'Space Grotesk', monospace; font-size: 1.8rem; font-weight: 700; color: var(--accent); transition: color 0.5s ease; animation: pulse-orange 2s infinite ease-in-out; }
     
     .sats-per-dollar { margin-top: 0.75rem; text-align: center; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); color: #34d399; padding: 0.6rem; border-radius: 12px; font-weight: 600; font-size: 0.85rem; }
+    .refresh-btn { margin-top: 0.5rem; background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.5rem; transition: color 0.3s, transform 0.3s; display: inline-flex; align-items: center; justify-content: center; padding: 0.5rem; border-radius: 50%; }
+    .refresh-btn:hover { color: var(--accent); background: rgba(255,255,255,0.05); }
+    .refresh-btn.spinning svg { animation: spin 1s linear infinite; }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
     .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--accent); color: #000; padding: 0.75rem 2rem; border-radius: 50px; font-weight: 700; opacity: 0; transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); z-index: 1000; box-shadow: 0 10px 25px var(--accent-glow); }
     .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
     .custom-inputs { display: flex; gap: 0.5rem; margin-top: 0.5rem;}
@@ -112,6 +116,9 @@
         <p>Current <span id="tickerName">Bitcoin</span> Price</p>
         <div class="live-price" id="coinPrice">Loading...</div>
         <div class="sats-per-dollar" id="satsPerDollar" style="display: none;">-- sats per $1</div>
+        <button id="refreshBtn" onclick="forceFetchPrices()" class="refresh-btn" aria-label="Refresh price" title="Refresh Price">
+          <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+        </button>
       </div>
     </div>
 
@@ -184,10 +191,26 @@
       }).format(num);
     };
 
+    let priceInterval = null;
+
     window.initSbcUi = function () {
       handleCoinChange();
       setupEventListeners();
+      
+      if (priceInterval) clearInterval(priceInterval);
+      priceInterval = setInterval(fetchPrices, 60000); // Auto update every 1 minute
     };
+
+    async function forceFetchPrices() {
+      const btn = document.getElementById('refreshBtn');
+      if (btn) btn.classList.add('spinning');
+      
+      await fetchPrices();
+      
+      if (btn) btn.classList.remove('spinning');
+      if (priceInterval) clearInterval(priceInterval);
+      priceInterval = setInterval(fetchPrices, 60000);
+    }
 
     async function fetchPrices() {
       if(state.isFetching) return;

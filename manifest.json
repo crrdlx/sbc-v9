@@ -1,6 +1,6 @@
 {
-"name": "Satoshi Bitcoin Converter v9",
-"short_name": "SBC v9",
+"name": "Satoshi Bitcoin Converter",
+"short_name": "Satoshi",
 "start_url": "./",
 "scope": "./",
 "display": "standalone",
@@ -26,6 +26,6 @@
     "type": "image/png"
     }
 ],
-"background_color": "#ffffff",
-"theme_color": "#ffffff"
+"background_color": "#0f172a",
+"theme_color": "#0f172a"
 }

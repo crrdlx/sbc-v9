@@ -15,6 +15,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../src/style.css">
+  <style>
+    /* Taller charts so line fluctuations use more vertical space */
+    .chart-container { min-height: 320px; height: 380px; position: relative; }
+  </style>
 
 </head>
 <body onload="init()">
@@ -235,31 +239,49 @@
 
     function renderChart(labels, ratios) {
       const ctx = document.getElementById('satsRatioChart').getContext('2d');
+      const ratiosNum = ratios.map(r => typeof r === 'string' ? parseFloat(r.replace(/,/g, '')) : Number(r));
+      const centsPerSat = ratiosNum.map(ratio => 1 / ratio);
+      // Log scale: same absolute wiggle uses more of the chart when values span orders of magnitude
+      const yMin = Math.max(1e-6, Math.min(...ratiosNum) * 0.92);
+      const yMax = Math.max(...ratiosNum) * 1.08;
+      const y1Min = Math.max(1e-6, Math.min(...centsPerSat) * 0.92);
+      const y1Max = Math.max(...centsPerSat) * 1.08;
       new Chart(ctx, {
         type: 'line',
         data: {
           labels: labels,
           datasets: [{
             label: '1 cent is worth this many sats',
-            data: ratios,
+            data: ratiosNum,
             borderColor: '#ff0000',
             backgroundColor: 'rgba(255, 0, 0, 0.2)',
             fill: true,
             tension: 0.1,
+            borderWidth: 2,
+            pointRadius: 0,
+            pointHoverRadius: 6,
+            pointBorderWidth: 0,
+            pointBackgroundColor: 'transparent',
             yAxisID: 'y'
           }, {
             label: '1 sat is worth this many cents',
-            data: ratios.map(ratio => 1 / ratio),
+            data: centsPerSat,
             borderColor: '#f28c38',
             backgroundColor: 'rgba(242, 140, 56, 0.2)',
             fill: true,
             tension: 0.1,
+            borderWidth: 2,
+            pointRadius: 0,
+            pointHoverRadius: 6,
+            pointBorderWidth: 0,
+            pointBackgroundColor: 'transparent',
             yAxisID: 'y1'
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
           scales: {
             x: {
               title: { 
@@ -269,35 +291,50 @@
               ticks: { maxTicksLimit: 8, callback: function(value, index) { return labels[index]; } },
               reverse: true
             },
-                         y: {
-               type: 'linear',
-               display: true,
-               position: 'left',
-               title: { 
-                 display: true, 
-                 text: '1 cent is worth this many sats',
-                 color: '#ff0000'
-               },
-               beginAtZero: false,
-               suggestedMin: Math.min(...ratios) * 0.9,
-               suggestedMax: Math.max(...ratios) * 1.1
-             },
+            y: {
+              type: 'logarithmic',
+              display: true,
+              position: 'left',
+              title: { 
+                display: true, 
+                text: '1 cent is worth this many sats (log scale)',
+                color: '#ff0000'
+              },
+              min: yMin,
+              max: yMax,
+              ticks: {
+                callback: function(value) {
+                  var v = Number(value);
+                  if (!isFinite(v)) return '';
+                  if (v >= 1000) return v.toLocaleString('en-US', { maximumFractionDigits: 0 });
+                  if (v >= 10) return v.toLocaleString('en-US', { maximumFractionDigits: 1 });
+                  return v.toLocaleString('en-US', { maximumFractionDigits: 2 });
+                }
+              }
+            },
             y1: {
-               type: 'linear',
-               display: true,
-               position: 'right',
-               title: { 
-                 display: true, 
-                 text: '1 sat is worth this many cents',
-                 color: '#f28c38'
-               },
-               beginAtZero: false,
-              suggestedMin: Math.min(...ratios.map(ratio => 1 / ratio)) * 0.9,
-              suggestedMax: Math.max(...ratios.map(ratio => 1 / ratio)) * 1.1,
-               grid: {
-                 drawOnChartArea: false,
-               },
-             }
+              type: 'logarithmic',
+              display: true,
+              position: 'right',
+              title: { 
+                display: true, 
+                text: '1 sat is worth this many cents (log scale)',
+                color: '#f28c38'
+              },
+              min: y1Min,
+              max: y1Max,
+              grid: {
+                drawOnChartArea: false,
+              },
+              ticks: {
+                callback: function(value) {
+                  var v = Number(value);
+                  if (!isFinite(v)) return '';
+                  if (v >= 0.1) return v.toFixed(3);
+                  return v.toExponential(1);
+                }
+              }
+            }
           },
           plugins: {
             legend: { display: true },
@@ -348,15 +385,18 @@
       document.getElementById('currentProgress').textContent = progressPercentage.toFixed(2) + '%';
       document.getElementById('remainingProgress').textContent = remainingPercentage.toFixed(2) + '%';
       
-      // Create progress chart
+      // Create progress chart — cap Y so the line uses most of the chart (full 0–100% hides tiny % values)
       const progressCtx = document.getElementById('progressChart').getContext('2d');
+      const progressSeries = [0, 0.1, 0.3, 0.8, 2.1, 1.8, 3.2, 4.5, progressPercentage];
+      const progressPeak = Math.max.apply(null, progressSeries);
+      const progressYMax = Math.min(100, Math.max(6, progressPeak * 1.2));
       new Chart(progressCtx, {
         type: 'line',
         data: {
           labels: ['2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025'],
           datasets: [{
             label: 'Progress to Satoshi Day',
-            data: [0, 0.1, 0.3, 0.8, 2.1, 1.8, 3.2, 4.5, progressPercentage],
+            data: progressSeries,
             borderColor: '#f28c38',
             backgroundColor: 'rgba(242, 140, 56, 0.2)',
             fill: true,
@@ -376,11 +416,12 @@
             y: {
               title: { 
                 display: true, 
-                text: 'Progress to Satoshi Day (%)',
+                text: 'Progress to Satoshi Day (%) — scaled to data',
                 color: '#333'
               },
               beginAtZero: true,
-              max: 100,
+              min: 0,
+              max: progressYMax,
               ticks: {
                 callback: function(value) {
                   return value + '%';
@@ -447,14 +488,10 @@
       const mountainLabels = Array.from({ length: 101 }, (_, i) => i.toString());
       const summitPrice = 1000000;
 
-      // Build a smooth ascent curve that reaches $1M at the end (index 100)
+      // Linear ascent: straight line from $0 to $1M (linear Y-axis).
       const mountainData = mountainLabels.map((_, i) => {
-        const x = i / 100; // 0..1
-        // Gentle slope then steeper near the summit, scaled to $1M
-        const baseShape = x < 0.7
-          ? Math.pow(x / 0.7, 0.6) * 0.6
-          : 0.6 + Math.pow((x - 0.7) / 0.3, 1.4) * 0.4;
-        return Math.min(baseShape * summitPrice, summitPrice);
+        const t = i / 100;
+        return t * summitPrice;
       });
 
       // Horizontal marker at the current price
@@ -464,6 +501,30 @@
       const climberIndex = mountainData.findIndex(y => y >= currentPrice);
       const climberX = climberIndex === -1 ? mountainLabels.length - 1 : climberIndex;
       const climberPoint = mountainLabels.map((_, idx) => (idx === climberX ? currentPrice : null));
+
+      // Draw 🧗 at scale coords (works even with pointRadius 0). Tooltip uses invisible hitRadius.
+      const mountainClimberEmojiPlugin = {
+        id: 'mountainClimberEmoji',
+        afterDatasetsDraw: function(chart) {
+          var xScale = chart.scales.x;
+          var yScale = chart.scales.y;
+          if (!xScale || !yScale) return;
+          var x = xScale.getPixelForValue(mountainLabels[climberX]);
+          var y = yScale.getPixelForValue(currentPrice);
+          if (!isFinite(x) || !isFinite(y)) return;
+          var ctx = chart.ctx;
+          ctx.save();
+          ctx.font = '24px "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('🧗', x, y);
+          ctx.font = '600 12px Outfit, system-ui, sans-serif';
+          ctx.fillStyle = 'rgba(51, 51, 51, 0.92)';
+          ctx.textAlign = 'left';
+          ctx.fillText('Bitcoin Climber', x + 16, y);
+          ctx.restore();
+        }
+      };
 
       new Chart(mountainCtx, {
         type: 'line',
@@ -476,7 +537,7 @@
               borderColor: '#8B4513',
               backgroundColor: 'rgba(139, 69, 19, 0.25)',
               fill: true,
-              tension: 0.35,
+              tension: 0,
               pointRadius: 0
             },
             {
@@ -489,16 +550,18 @@
               pointRadius: 0
             },
             {
-              label: 'Climber',
+              label: 'Bitcoin Climber',
               data: climberPoint,
-              borderColor: '#FF6B35',
-              backgroundColor: '#FF6B35',
-              pointRadius: 7,
-              pointHoverRadius: 9,
+              borderColor: 'transparent',
+              backgroundColor: 'transparent',
+              pointRadius: 0,
+              pointHoverRadius: 0,
+              hitRadius: 28,
               showLine: false
             }
           ]
         },
+        plugins: [mountainClimberEmojiPlugin],
         options: {
           responsive: true,
           maintainAspectRatio: false,
@@ -514,12 +577,13 @@
               }
             },
             y: {
+              type: 'linear',
               title: {
                 display: true,
                 text: 'Bitcoin Price (USD)'
               },
               beginAtZero: true,
-              suggestedMax: summitPrice,
+              min: 0,
               max: summitPrice,
               ticks: {
                 callback: function(value) {
@@ -542,8 +606,8 @@
                   if (context.dataset.label === 'Current Price') {
                     return 'Current: $' + currentPrice.toLocaleString();
                   }
-                  if (context.dataset.label === 'Climber') {
-                    return 'Climber at: $' + currentPrice.toLocaleString();
+                  if (context.dataset.label === 'Bitcoin Climber') {
+                    return 'Bitcoin Climber at: $' + currentPrice.toLocaleString();
                   }
                   return 'Path: $' + Math.round(context.parsed.y).toLocaleString();
                 }

@@ -134,7 +134,7 @@ Read the original post, predict when it will happen, or offer your own suggestio
     const form = document.pennyconverter;
     const satoshiValue = parseNumber(form.satoshi.value);
     const usdValue = (satoshiValue * currentPrice) / 100000000;
-    form.usd.value = formatNumber(usdValue, 2);
+    form.usd.value = formatNumber(usdValue, 4);
   }
 </script>
 

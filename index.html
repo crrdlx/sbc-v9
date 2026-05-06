@@ -231,7 +231,7 @@
         state.priceFiat = parseFloat(data[state.fiat]) || 0;
         state.priceBtc = parseFloat(data["BTC"]) || (state.coin === "BTC" ? 1 : 0);
         
-        elements.coinPrice.innerText = `${fiatSymbols[state.fiat]||''}${formatNum(state.priceFiat, state.priceFiat < 1 ? 4 : 2)}`;
+        elements.coinPrice.innerText = `${fiatSymbols[state.fiat]||''}${formatNum(state.priceFiat, 4)}`;
         
         // Sats per fiat calculator
         if(state.priceBtc > 0 && state.priceFiat > 0) {
@@ -302,7 +302,7 @@
         let fiatVal = val * state.priceFiat;
         
         elements.inputSats.value = formatNum(satsVal, 0);
-        elements.inputUsd.value = formatNum(fiatVal, 2);
+        elements.inputUsd.value = formatNum(fiatVal, 4);
       } 
       else if (source === 'sats') {
         let val = parseNum(elements.inputSats.value);
@@ -314,7 +314,7 @@
         let fiatVal = coinVal * state.priceFiat;
 
         elements.inputCoin.value = formatNum(coinVal, 8);
-        elements.inputUsd.value = formatNum(fiatVal, 2);
+        elements.inputUsd.value = formatNum(fiatVal, 4);
       }
       else if (source === 'fiat') {
         let val = parseNum(elements.inputUsd.value);

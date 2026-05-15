@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <title>Satoshi Day - Satoshi Bitcoin Converter</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  
+
   <link rel="manifest" href="manifest.json">
-  
+
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
@@ -27,14 +27,14 @@
     <div style="text-align: center; margin-bottom: 2rem;">
         <a href="../index.html" class="home-btn">← Back to Converter</a>
     </div>
-    
+
   <a name="home_top_page"></a>
-  
+
     <header>
       <h1><a href="../index.html">シ Satoshi Bitcoin Converter</a></h1>
       <p style="font-size:0.8rem; color:var(--text-muted); margin-top:-1.2rem; font-weight:600;">v9</p>
     </header>
-    
+
 
   <h3>Satoshi Day</h3>
 
@@ -48,7 +48,7 @@
     <p><i>Traditions will be needed when the Satoshi Day comes. Fireworks? Songs? Lighting your favorite fiat bill on fire and launching it with one of those Chinese lantern things?</i></p>
   </blockquote>
 
-  <p>Read the original post "Satoshi Day" post on: 
+  <p>Read the original post "Satoshi Day" post on:
   <a href="https://www.reddit.com/r/Bitcoin/comments/7flcw4/satoshi_day_when_one_usd_penny_equals_one_satoshi/">Reddit</a> | <a href="https://bitcointalk.org/index.php?topic=2464147.msg25232749#msg25232749">BitcoinTalk.org</a>.</p>
 
   <p><b>Current Satoshi-to-Penny Ratio</b></p>
@@ -80,15 +80,15 @@
   </div>
 
   <p>Over time, watch the red line draw down to 1 and the orange line grow up to 1. Eventually, when one Bitcoin is worth $1M, the penny-to-sat ratio will be 1:1. That'll be Satoshi Day. </p>
-  
+
   <h3>Satoshi Day Progress Tracking</h3>
-  
+
   <p><b>How close are we to Satoshi Day?</b> The charts below show our progress toward the day when 1 satoshi = 1 penny. We're tracking multiple ways to measure this progress:</p>
-  
+
   <div class="chart-container">
     <canvas id="progressChart"></canvas>
   </div>
-  
+
   <p><b>Progress Explanation:</b></p>
   <ul>
     <li><b>Red Progress Line:</b> Shows how close we are to Satoshi Day based on the current satoshi-to-penny ratio. When this reaches 100%, we've achieved Satoshi Day.</li>
@@ -96,19 +96,19 @@
     <li><b>Current Progress:</b> <span id="currentProgress">Calculating...</span></li>
     <li><b>Remaining:</b> <span id="remainingProgress">Calculating...</span></li>
   </ul>
-  
+
      <div class="chart-container">
      <canvas id="circularProgressChart"></canvas>
    </div>
-   
+
    <p><b>Bitcoin Price Progress:</b> This circular chart shows how close Bitcoin is to reaching $1M. The colored area represents current progress toward the $1M target.</p>
-   
+
    <div class="chart-container">
      <canvas id="mountainChart"></canvas>
    </div>
-   
+
    <p><b>Mountain Climb:</b> Visual representation of Bitcoin's journey from $0 to $1M. The climber shows where we are now on this epic ascent to the peak.</p>
-  
+
   <p class="footer" style="text-align:center">🚀 🌙</p>
 
   <p class="footer" style="text-align:center"><small>Satoshi Bitcoin Converter - since 2013</small></p>
@@ -119,10 +119,10 @@
 
   <!-- StatCounter Code -->
   <script type="text/javascript">
-    var sc_project=9064341; 
-    var sc_invisible=1; 
-    var sc_partition=35; 
-    var sc_security="4159c4ae"; 
+    var sc_project=9064341;
+    var sc_invisible=1;
+    var sc_partition=35;
+    var sc_security="4159c4ae";
   </script>
   <script type="text/javascript" src="https://www.statcounter.com/counter/counter_xhtml.js"></script>
   <noscript><div class="statcounter"><a href="https://www.statcounter.com/" target="_blank"><img class="statcounter" src="https://c36.statcounter.com/9064341/0/4159c4ae/1/" alt="hit counter html code"></a></div></noscript>
@@ -284,8 +284,8 @@
           interaction: { mode: 'index', intersect: false },
           scales: {
             x: {
-              title: { 
-                display: true, 
+              title: {
+                display: true,
                 text: 'Date (Since Satoshi Day concept: Nov 26, 2017)'
               },
               ticks: { maxTicksLimit: 8, callback: function(value, index) { return labels[index]; } },
@@ -295,8 +295,8 @@
               type: 'logarithmic',
               display: true,
               position: 'left',
-              title: { 
-                display: true, 
+              title: {
+                display: true,
                 text: '1 cent is worth this many sats (log scale)',
                 color: '#ff0000'
               },
@@ -316,8 +316,8 @@
               type: 'logarithmic',
               display: true,
               position: 'right',
-              title: { 
-                display: true, 
+              title: {
+                display: true,
                 text: '1 sat is worth this many cents (log scale)',
                 color: '#f28c38'
               },
@@ -338,8 +338,8 @@
           },
           plugins: {
             legend: { display: true },
-            title: { 
-              display: true, 
+            title: {
+              display: true,
               text: 'Penny purchasing power in red. Sat purchasing power in orange.'
             }
           }
@@ -380,11 +380,11 @@
       const currentRatio = 1000000 / currentPrice; // sats per penny
       const progressPercentage = Math.min((1 / currentRatio) * 100, 100); // Convert to percentage
       const remainingPercentage = Math.max(100 - progressPercentage, 0);
-      
+
       // Update progress text
       document.getElementById('currentProgress').textContent = progressPercentage.toFixed(2) + '%';
       document.getElementById('remainingProgress').textContent = remainingPercentage.toFixed(2) + '%';
-      
+
       // Create progress chart — cap Y so the line uses most of the chart (full 0–100% hides tiny % values)
       const progressCtx = document.getElementById('progressChart').getContext('2d');
       const progressSeries = [0, 0.1, 0.3, 0.8, 2.1, 1.8, 3.2, 4.5, progressPercentage];
@@ -408,14 +408,14 @@
           maintainAspectRatio: false,
           scales: {
             x: {
-              title: { 
-                display: true, 
+              title: {
+                display: true,
                 text: 'Year'
               }
             },
             y: {
-              title: { 
-                display: true, 
+              title: {
+                display: true,
                 text: 'Progress to Satoshi Day (%) — scaled to data',
                 color: '#333'
               },
@@ -431,8 +431,8 @@
           },
           plugins: {
             legend: { display: true },
-            title: { 
-              display: true, 
+            title: {
+              display: true,
               text: 'Progress Toward Satoshi Day (1 sat = 1 penny)'
             }
           }
@@ -442,7 +442,7 @@
              // Create circular progress chart
        const circularCtx = document.getElementById('circularProgressChart').getContext('2d');
        const btcProgressPercentage = Math.min((currentPrice / 1000000) * 100, 100);
-       
+
        new Chart(circularCtx, {
          type: 'doughnut',
          data: {
@@ -462,8 +462,8 @@
            cutout: '70%',
            plugins: {
              legend: { display: true },
-             title: { 
-               display: true, 
+             title: {
+               display: true,
                text: 'Bitcoin Price Progress to $1M: ' + btcProgressPercentage.toFixed(2) + '%'
              },
              tooltip: {

@@ -1,21 +1,17 @@
+<!-- version 9.0.0 -->
 <!doctype html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <title>Satoshi Bitcoin Converter v9</title>
-  <meta name="viewport"
-    content="viewport-fit=cover, width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+  <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
   <meta name="theme-color" content="#0f172a">
-  <meta name="description"
-    content="Convert between Bitcoin, altcoins, satoshis, and fiat currencies like USD, GBP, and more.">
+  <meta name="description" content="Convert between Bitcoin, altcoins, satoshis, and fiat currencies like USD, GBP, and more.">
   <link rel="icon" type="image/png" href="img/favicon.png">
   <link rel="manifest" href="manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@500;700&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 
   <script src="config.js"></script>
   <script src="src/App.js"></script>
@@ -24,231 +20,34 @@
   <link rel="stylesheet" href="src/style.css">
   <style>
     /* Index specific */
-    .selector-row {
-      display: flex;
-      gap: 0.75rem;
-      margin-bottom: 1.25rem;
-    }
+    .selector-row { display: flex; gap: 0.75rem; margin-bottom: 1.25rem; }
+    .select-group { flex: 1; display: flex; flex-direction: column; gap: 0.25rem; }
+    .select-group label { font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+    select, input[type="text"] { background: var(--input-bg); border: 1px solid var(--card-border); color: var(--text-main); font-family: inherit; padding: 0.6rem 0.75rem; border-radius: 12px; font-size: 0.95rem; outline: none; transition: all 0.3s ease; width: 100%; }
+    select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 1em; }
+    select:focus, input[type="text"]:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-glow); }
+    .converter-row { margin-bottom: 1rem; position: relative; }
+    .converter-row label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem; font-size: 0.85rem; color: var(--text-muted); }
+    .input-wrapper { position: relative; display: flex; align-items: center; }
+    .symbol-prefix { position: absolute; left: 1rem; font-size: 1.1rem; color: var(--text-muted); font-family: 'Space Grotesk', sans-serif; pointer-events: none; }
+    .converter-row input { font-family: 'Space Grotesk', monospace; font-size: 1.35rem; font-weight: 700; padding: 0.75rem 1rem 0.75rem 2.25rem; height: 56px; background: rgba(0,0,0,0.2); }
+    .unit-badge { background: rgba(255,255,255,0.08); padding: 0.2rem 0.5rem; border-radius: 6px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px; pointer-events: none; }
+    .price-ticker { margin-top: 1.25rem; text-align: center; padding-top: 1.25rem; border-top: 1px solid var(--card-border); }
+    .price-ticker p { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem; }
 
-    .select-group {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-    }
+    @keyframes pulse-box { 0% { box-shadow: 0 0 0 0 var(--accent-glow); } 60% { box-shadow: 0 0 0 6px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
+    .live-price { font-family: 'Space Grotesk', monospace; font-size: 1.8rem; font-weight: 700; color: var(--accent); border: 1px solid var(--accent); padding: 0.25rem 1.25rem; border-radius: 12px; display: inline-block; background: rgba(0,0,0,0.2); transition: color 0.5s ease; animation: pulse-box 4s infinite ease-out; }
 
-    .select-group label {
-      font-size: 0.7rem;
-      color: var(--text-muted);
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    select,
-    input[type="text"] {
-      background: var(--input-bg);
-      border: 1px solid var(--card-border);
-      color: var(--text-main);
-      font-family: inherit;
-      padding: 0.6rem 0.75rem;
-      border-radius: 12px;
-      font-size: 0.95rem;
-      outline: none;
-      transition: all 0.3s ease;
-      width: 100%;
-    }
-
-    select {
-      cursor: pointer;
-      appearance: none;
-      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-      background-repeat: no-repeat;
-      background-position: right 0.75rem center;
-      background-size: 1em;
-    }
-
-    select:focus,
-    input[type="text"]:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 2px var(--accent-glow);
-    }
-
-    .converter-row {
-      margin-bottom: 1rem;
-      position: relative;
-    }
-
-    .converter-row label {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 0.25rem;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
-    .input-wrapper {
-      position: relative;
-      display: flex;
-      align-items: center;
-    }
-
-    .symbol-prefix {
-      position: absolute;
-      left: 1rem;
-      font-size: 1.1rem;
-      color: var(--text-muted);
-      font-family: 'Space Grotesk', sans-serif;
-      pointer-events: none;
-    }
-
-    .converter-row input {
-      font-family: 'Space Grotesk', monospace;
-      font-size: 1.35rem;
-      font-weight: 700;
-      padding: 0.75rem 1rem 0.75rem 2.25rem;
-      height: 56px;
-      background: rgba(0, 0, 0, 0.2);
-    }
-
-    .unit-badge {
-      background: rgba(255, 255, 255, 0.08);
-      padding: 0.2rem 0.5rem;
-      border-radius: 6px;
-      font-size: 0.7rem;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      pointer-events: none;
-    }
-
-    .price-ticker {
-      margin-top: 1.25rem;
-      text-align: center;
-      padding-top: 1.25rem;
-      border-top: 1px solid var(--card-border);
-    }
-
-    .price-ticker p {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      margin-bottom: 0.5rem;
-    }
-
-    @keyframes pulse-box {
-      0% {
-        box-shadow: 0 0 0 0 var(--accent-glow);
-      }
-
-      60% {
-        box-shadow: 0 0 0 6px transparent;
-      }
-
-      100% {
-        box-shadow: 0 0 0 0 transparent;
-      }
-    }
-
-    .live-price {
-      font-family: 'Space Grotesk', monospace;
-      font-size: 1.8rem;
-      font-weight: 700;
-      color: var(--accent);
-      border: 1px solid var(--accent);
-      padding: 0.25rem 1.25rem;
-      border-radius: 12px;
-      display: inline-block;
-      background: rgba(0, 0, 0, 0.2);
-      transition: color 0.5s ease;
-      animation: pulse-box 4s infinite ease-out;
-    }
-
-    .sats-per-dollar {
-      margin-top: 0.75rem;
-      text-align: center;
-      background: rgba(16, 185, 129, 0.1);
-      border: 1px solid rgba(16, 185, 129, 0.2);
-      color: #34d399;
-      padding: 0.6rem;
-      border-radius: 12px;
-      font-weight: 600;
-      font-size: 0.85rem;
-    }
-
-    .refresh-btn {
-      margin-top: 0.5rem;
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      cursor: pointer;
-      font-size: 1.5rem;
-      transition: color 0.3s, transform 0.3s;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0.5rem;
-      border-radius: 50%;
-    }
-
-    .refresh-btn:hover {
-      color: var(--accent);
-      background: rgba(255, 255, 255, 0.05);
-    }
-
-    .refresh-btn.spinning svg {
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-      100% {
-        transform: rotate(360deg);
-      }
-    }
-
-    .toast {
-      position: fixed;
-      bottom: 2rem;
-      left: 50%;
-      transform: translateX(-50%) translateY(100px);
-      background: var(--accent);
-      color: #000;
-      padding: 0.75rem 2rem;
-      border-radius: 50px;
-      font-weight: 700;
-      opacity: 0;
-      transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-      z-index: 1000;
-      box-shadow: 0 10px 25px var(--accent-glow);
-    }
-
-    .toast.show {
-      transform: translateX(-50%) translateY(0);
-      opacity: 1;
-    }
-
-    .custom-inputs {
-      display: flex;
-      gap: 0.5rem;
-      margin-top: 0.5rem;
-    }
-
-    .custom-inputs input {
-      padding: 0.5rem 0.75rem;
-      font-size: 0.8rem;
-      background: rgba(0, 0, 0, 0.2);
-    }
-
-    @media (max-width: 480px) {
-      .glass-card {
-        padding: 1.25rem;
-        border-radius: 20px;
-      }
-
-      .converter-row input {
-        font-size: 1.2rem;
-        height: 50px;
-      }
-    }
+    .sats-per-dollar { margin-top: 0.75rem; text-align: center; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); color: #34d399; padding: 0.6rem; border-radius: 12px; font-weight: 600; font-size: 0.85rem; }
+    .refresh-btn { margin-top: 0.5rem; background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.5rem; transition: color 0.3s, transform 0.3s; display: inline-flex; align-items: center; justify-content: center; padding: 0.5rem; border-radius: 50%; }
+    .refresh-btn:hover { color: var(--accent); background: rgba(255,255,255,0.05); }
+    .refresh-btn.spinning svg { animation: spin 1s linear infinite; }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+    .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--accent); color: #000; padding: 0.75rem 2rem; border-radius: 50px; font-weight: 700; opacity: 0; transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); z-index: 1000; box-shadow: 0 10px 25px var(--accent-glow); }
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    .custom-inputs { display: flex; gap: 0.5rem; margin-top: 0.5rem;}
+    .custom-inputs input { padding: 0.5rem 0.75rem; font-size: 0.8rem; background: rgba(0,0,0,0.2); }
+    @media (max-width: 480px) { .glass-card { padding: 1.25rem; border-radius: 20px; } .converter-row input { font-size: 1.2rem; height: 50px; } }
   </style>
 </head>
 
@@ -270,7 +69,7 @@
             <option value="SOL">◎ Solana (SOL)</option>
           </select>
           <div class="custom-inputs">
-            <input type="text" id="customCoin" placeholder="Ticker (e.g. DOGE)" onchange="handleCoinChange()">
+             <input type="text" id="customCoin" placeholder="Ticker (e.g. DOGE)" onchange="handleCoinChange()">
           </div>
         </div>
 
@@ -284,8 +83,8 @@
             <option value="AUD">A$ AUD</option>
             <option value="JPY">¥ JPY</option>
           </select>
-          <div class="custom-inputs">
-            <input type="text" id="customFiat" placeholder="Fiat (e.g. CHF)" onchange="handleCoinChange()">
+           <div class="custom-inputs">
+             <input type="text" id="customFiat" placeholder="Fiat (e.g. CHF)" onchange="handleCoinChange()">
           </div>
         </div>
       </div>
@@ -318,14 +117,8 @@
         <p>Current <span id="tickerName">Bitcoin</span> Price</p>
         <div class="live-price" id="coinPrice">Loading...</div>
         <div>
-          <button id="refreshBtn" onclick="forceFetchPrices()" class="refresh-btn" aria-label="Refresh price"
-            title="Refresh Price">
-            <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round"
-              stroke-linejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-              <polyline points="23 4 23 10 17 10"></polyline>
-              <polyline points="1 20 1 14 7 14"></polyline>
-              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
-            </svg>
+          <button id="refreshBtn" onclick="forceFetchPrices()" class="refresh-btn" aria-label="Refresh price" title="Refresh Price">
+            <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
           </button>
         </div>
         <div class="sats-per-dollar" id="satsPerDollar" style="display: none;">-- sats per $1</div>
@@ -337,7 +130,7 @@
       var sc_project = 9064341;
       var sc_invisible = 1;
       var sc_partition = 35;
-      var sc_security = "4159c4ae"; 
+      var sc_security = "4159c4ae";
     </script>
     <script type="text/javascript" src="https://www.statcounter.com/counter/counter_xhtml.js"></script>
     <noscript>
@@ -353,8 +146,7 @@
       <a href="pages/tips.html">Tip Jar 😃</a>
     </div>
 
-    <div style="text-align:center; margin-top:2rem; font-size:0.85rem; color:var(--text-muted); font-weight:600;">SBC-v9
-    </div>
+    <div style="text-align:center; margin-top:2rem; font-size:0.85rem; color:var(--text-muted); font-weight:600;">SBC-v9</div>
   </main>
 
   <div class="toast" id="toast">Copied!</div>
@@ -387,15 +179,15 @@
     };
 
     const parseNum = (str) => {
-      if (!str) return 0;
-      let cleaned = str.toString().replace(/,/g, '');
-      if (cleaned.match(/[a-zA-Z]/)) return 0;
-      let val = parseFloat(cleaned);
-      return isNaN(val) ? 0 : val;
+        if(!str) return 0;
+        let cleaned = str.toString().replace(/,/g, '');
+        if(cleaned.match(/[a-zA-Z]/)) return 0;
+        let val = parseFloat(cleaned);
+        return isNaN(val) ? 0 : val;
     };
 
     const formatNum = (num, decimals) => {
-      if (num === 0) return "";
+      if(num === 0) return "";
       return new Intl.NumberFormat('en-US', {
         minimumFractionDigits: decimals,
         maximumFractionDigits: decimals
@@ -424,7 +216,7 @@
     }
 
     async function fetchPrices() {
-      if (state.isFetching) return;
+      if(state.isFetching) return;
       state.isFetching = true;
       elements.coinPrice.style.opacity = '0.5';
 
@@ -440,17 +232,17 @@
         state.priceFiat = parseFloat(data[state.fiat]) || 0;
         state.priceBtc = parseFloat(data["BTC"]) || (state.coin === "BTC" ? 1 : 0);
 
-        elements.coinPrice.innerText = `${fiatSymbols[state.fiat] || ''}${formatNum(state.priceFiat, 4)}`;
+        elements.coinPrice.innerText = `${fiatSymbols[state.fiat]||''}${formatNum(state.priceFiat, 4)}`;
 
         // Sats per fiat calculator
-        if (state.priceBtc > 0 && state.priceFiat > 0) {
-          let oneFiatInCoin = 1 / state.priceFiat;
-          let oneFiatInBtc = oneFiatInCoin * state.priceBtc;
-          let satsPerFiat = oneFiatInBtc * 100000000;
-          elements.satsPerDollar.innerText = `${Math.round(satsPerFiat).toLocaleString()} sats per ${fiatSymbols[state.fiat] || ''}1`;
-          elements.satsPerDollar.style.display = 'block';
+        if(state.priceBtc > 0 && state.priceFiat > 0) {
+            let oneFiatInCoin = 1 / state.priceFiat;
+            let oneFiatInBtc = oneFiatInCoin * state.priceBtc;
+            let satsPerFiat = oneFiatInBtc * 100000000;
+            elements.satsPerDollar.innerText = `${Math.round(satsPerFiat).toLocaleString()} sats per ${fiatSymbols[state.fiat]||''}1`;
+            elements.satsPerDollar.style.display = 'block';
         } else {
-          elements.satsPerDollar.style.display = 'none';
+            elements.satsPerDollar.style.display = 'none';
         }
 
         recalculateFrom('coin');
@@ -499,12 +291,12 @@
     }
 
     function recalculateFrom(source) {
-      if (!state.priceFiat) return;
+      if(!state.priceFiat) return;
 
       if (source === 'coin') {
         let val = parseNum(elements.inputCoin.value);
-        if (val === 0 && !elements.inputCoin.value) {
-          elements.inputSats.value = ''; elements.inputUsd.value = ''; return;
+        if(val === 0 && !elements.inputCoin.value) {
+           elements.inputSats.value = ''; elements.inputUsd.value = ''; return;
         }
         let btcVal = val * state.priceBtc;
         let satsVal = btcVal * 100000000;
@@ -515,8 +307,8 @@
       }
       else if (source === 'sats') {
         let val = parseNum(elements.inputSats.value);
-        if (val === 0 && !elements.inputSats.value) {
-          elements.inputCoin.value = ''; elements.inputUsd.value = ''; return;
+        if(val === 0 && !elements.inputSats.value) {
+           elements.inputCoin.value = ''; elements.inputUsd.value = ''; return;
         }
         let btcVal = val / 100000000;
         let coinVal = btcVal / state.priceBtc;
@@ -527,8 +319,8 @@
       }
       else if (source === 'fiat') {
         let val = parseNum(elements.inputUsd.value);
-        if (val === 0 && !elements.inputUsd.value) {
-          elements.inputCoin.value = ''; elements.inputSats.value = ''; return;
+        if(val === 0 && !elements.inputUsd.value) {
+           elements.inputCoin.value = ''; elements.inputSats.value = ''; return;
         }
         let coinVal = val / state.priceFiat;
         let btcVal = coinVal * state.priceBtc;
@@ -548,23 +340,23 @@
       // Clean on focus
       [elements.inputCoin, elements.inputSats, elements.inputUsd].forEach(input => {
         input.addEventListener('focus', () => {
-          if (input.value) {
-            input.value = input.value.replace(/,/g, '');
-          }
+           if(input.value) {
+               input.value = input.value.replace(/,/g, '');
+           }
         });
         input.addEventListener('blur', () => {
-          recalculateFrom(input.id.replace('input-', ''));
+           recalculateFrom(input.id.replace('input-', ''));
         });
       });
 
       // Copy on click of labels/symbols
       document.querySelectorAll('.input-wrapper').forEach(wrapper => {
         wrapper.addEventListener('dblclick', () => {
-          const input = wrapper.querySelector('input');
-          if (input.value) {
-            navigator.clipboard.writeText(input.value.replace(/,/g, ''));
-            showToast();
-          }
+           const input = wrapper.querySelector('input');
+           if(input.value) {
+               navigator.clipboard.writeText(input.value.replace(/,/g, ''));
+               showToast();
+           }
         });
       });
     }
@@ -579,11 +371,10 @@
 
     // Fallback if PWA script fails
     setTimeout(() => {
-      if (!elements.coinPrice.innerText || elements.coinPrice.innerText === "Loading...") {
-        window.initSbcUi();
-      }
+        if(!elements.coinPrice.innerText || elements.coinPrice.innerText === "Loading...") {
+            window.initSbcUi();
+        }
     }, 1000);
   </script>
 </body>
-
 </html>

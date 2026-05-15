@@ -1,17 +1,17 @@
-<!-- version 9.0.2 -->
+<!-- version 9.0.0 -->
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Satoshi Bitcoin Converter v9</title>
   <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-  <meta name="theme-color" content="#1a1a1a">
+  <meta name="theme-color" content="#0f172a">
   <meta name="description" content="Convert between Bitcoin, altcoins, satoshis, and fiat currencies like USD, GBP, and more.">
   <link rel="icon" type="image/png" href="img/favicon.png">
   <link rel="manifest" href="manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600&family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 
   <script src="config.js"></script>
   <script src="src/App.js"></script>
@@ -19,182 +19,45 @@
 
   <link rel="stylesheet" href="src/style.css">
   <style>
-    :root {
-      /* Dark Theme Variables (Default) */
-      --bg-main: #121212;
-      --card-bg: #1e1e1e;
-      --card-border: #333333;
-      --input-bg: #141414;
-      --input-inner: #000000;
-      --text-main: #e2e8f0;
-      --text-muted: #888888;
-      --accent: #f59e0b;
-      --success: #34d399;
-      --btn-bg: #333333;
-    }
-
-    [data-theme="light"] {
-      /* Traditional SBC Gray Theme Variables */
-      --bg-main: #f0f0f0;
-      --card-bg: #ffffff;
-      --card-border: #d1d5db;
-      --input-bg: #f9fafb;
-      --input-inner: #ffffff;
-      --text-main: #1f2937;
-      --text-muted: #6b7280;
-      --accent: #d97706;
-      --success: #059669;
-      --btn-bg: #e5e7eb;
-    }
-
-    body {
-      background-color: var(--bg-main);
-      color: var(--text-main);
-      font-family: 'Space Grotesk', sans-serif;
-      transition: background-color 0.2s ease;
-    }
-
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0 1rem;
-      max-width: 500px;
-      margin: 0 auto;
-    }
-
-    header h1 a {
-      color: var(--text-main);
-      font-weight: 700;
-      letter-spacing: -1px;
-    }
-
-    .theme-toggle {
-      background: var(--btn-bg);
-      border: 1px solid var(--card-border);
-      color: var(--text-main);
-      padding: 6px 12px;
-      border-radius: 20px;
-      cursor: pointer;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.75rem;
-      font-weight: 600;
-      transition: all 0.2s ease;
-    }
-
-    .glass-card {
-      background: var(--card-bg) !important;
-      border: 1px solid var(--card-border) !important;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important;
-      border-radius: 12px !important;
-      padding: 1.5rem;
-      transition: background-color 0.2s ease;
-    }
-
+    /* Index specific */
     .selector-row { display: flex; gap: 0.75rem; margin-bottom: 1.25rem; }
     .select-group { flex: 1; display: flex; flex-direction: column; gap: 0.25rem; }
-    .select-group label { font-size: 0.65rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; }
+    .select-group label { font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+    select, input[type="text"] { background: var(--input-bg); border: 1px solid var(--card-border); color: var(--text-main); font-family: inherit; padding: 0.6rem 0.75rem; border-radius: 12px; font-size: 0.95rem; outline: none; transition: all 0.3s ease; width: 100%; }
+    select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 1em; }
+    select:focus, input[type="text"]:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-glow); }
+    .converter-row { margin-bottom: 1rem; position: relative; }
+    .converter-row label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem; font-size: 0.85rem; color: var(--text-muted); }
+    .input-wrapper { position: relative; display: flex; align-items: center; }
+    .symbol-prefix { position: absolute; left: 1rem; font-size: 1.1rem; color: var(--text-muted); font-family: 'Space Grotesk', sans-serif; pointer-events: none; }
+    .converter-row input { font-family: 'Space Grotesk', monospace; font-size: 1.35rem; font-weight: 700; padding: 0.75rem 1rem 0.75rem 2.25rem; height: 56px; background: rgba(0,0,0,0.2); }
+    .unit-badge { background: rgba(255,255,255,0.08); padding: 0.2rem 0.5rem; border-radius: 6px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px; pointer-events: none; }
+    .price-ticker { margin-top: 1.25rem; text-align: center; padding-top: 1.25rem; border-top: 1px solid var(--card-border); }
+    .price-ticker p { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem; }
 
-    select, input[type="text"] {
-      background: var(--input-bg);
-      border: 1px solid var(--card-border);
-      color: var(--text-main);
-      font-family: 'JetBrains Mono', monospace;
-      padding: 0.6rem 0.75rem;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      outline: none;
-      transition: border-color 0.2s ease;
-    }
+    @keyframes pulse-box { 0% { box-shadow: 0 0 0 0 var(--accent-glow); } 60% { box-shadow: 0 0 0 6px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
+    .live-price { font-family: 'Space Grotesk', monospace; font-size: 1.8rem; font-weight: 700; color: var(--accent); border: 1px solid var(--accent); padding: 0.25rem 1.25rem; border-radius: 12px; display: inline-block; background: rgba(0,0,0,0.2); transition: color 0.5s ease; animation: pulse-box 4s infinite ease-out; }
 
-    select:focus, input[type="text"]:focus { border-color: var(--accent); }
-
-    .converter-row { margin-bottom: 1.25rem; }
-    .converter-row label { font-size: 0.8rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; display: flex; justify-content: space-between; margin-bottom: 0.25rem; }
-
-    .input-wrapper { position: relative; }
-    .symbol-prefix { position: absolute; left: 1rem; font-size: 1.1rem; color: var(--accent); pointer-events: none; top: 50%; transform: translateY(-50%); }
-
-    .converter-row input {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 1.4rem !important;
-      padding: 0.75rem 1rem 0.75rem 2.5rem !important;
-      background: var(--input-inner) !important;
-      border: 1px solid var(--card-border) !important;
-      border-radius: 8px !important;
-      width: 100%;
-      box-sizing: border-box;
-      color: var(--text-main) !important;
-    }
-
-    .unit-badge { background: var(--btn-bg); color: var(--text-main); border-radius: 4px; padding: 2px 6px; font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; }
-
-    .price-ticker {
-      margin-top: 1.5rem;
-      padding-top: 1.5rem;
-      border-top: 1px solid var(--card-border);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-    }
-
-    .price-ticker p { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem; }
-
-    .live-price {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 1.8rem;
-      background: var(--input-inner) !important;
-      border: 2px solid var(--accent) !important;
-      border-radius: 12px !important;
-      color: var(--accent);
-      padding: 0.5rem 1.5rem !important;
-      display: inline-block;
-      margin-bottom: 0.5rem;
-    }
-
-    .sats-per-dollar {
-      width: 100%;
-      margin-top: 1rem;
-      background: var(--input-bg) !important;
-      border: 1px solid var(--success) !important;
-      color: var(--success) !important;
-      font-family: 'JetBrains Mono', monospace;
-      border-radius: 8px !important;
-      padding: 0.75rem;
-      font-weight: 600;
-      opacity: 0.9;
-    }
-
-    .refresh-btn {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      cursor: pointer;
-      font-size: 1.5rem;
-      display: flex;
-      margin: 0.5rem auto;
-    }
-
-    .footer-links { text-align: center; margin-top: 2rem; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
-    .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 0.8rem; }
-    .footer-links a:hover { color: var(--text-main); }
-
-    .custom-inputs { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
-    .custom-inputs input { width: 100%; }
-
-    @media (max-width: 480px) { .glass-card { padding: 1.25rem; } }
+    .sats-per-dollar { margin-top: 0.75rem; text-align: center; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); color: #34d399; padding: 0.6rem; border-radius: 12px; font-weight: 600; font-size: 0.85rem; }
+    .refresh-btn { margin-top: 0.5rem; background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.5rem; transition: color 0.3s, transform 0.3s; display: inline-flex; align-items: center; justify-content: center; padding: 0.5rem; border-radius: 50%; }
+    .refresh-btn:hover { color: var(--accent); background: rgba(255,255,255,0.05); }
+    .refresh-btn.spinning svg { animation: spin 1s linear infinite; }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+    .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--accent); color: #000; padding: 0.75rem 2rem; border-radius: 50px; font-weight: 700; opacity: 0; transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); z-index: 1000; box-shadow: 0 10px 25px var(--accent-glow); }
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    .custom-inputs { display: flex; gap: 0.5rem; margin-top: 0.5rem;}
+    .custom-inputs input { padding: 0.5rem 0.75rem; font-size: 0.8rem; background: rgba(0,0,0,0.2); }
+    @media (max-width: 480px) { .glass-card { padding: 1.25rem; border-radius: 20px; } .converter-row input { font-size: 1.2rem; height: 50px; } }
   </style>
 </head>
 
 <body onload="init()">
   <header>
     <h1><a href="index.html" style="text-decoration:none">シ Satoshi Bitcoin Converter</a></h1>
-    <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()">Light Mode</button>
   </header>
 
   <main>
-    <div class="glass-card" id="mainCard" style="max-width: 500px; margin: 0 auto;">
+    <div class="glass-card" id="mainCard">
       <div class="selector-row">
         <div class="select-group">
           <label>Asset</label>
@@ -262,6 +125,19 @@
       </div>
     </div>
 
+    <!-- StatCounter Code -->
+    <script type="text/javascript">
+      var sc_project = 9064341;
+      var sc_invisible = 1;
+      var sc_partition = 35;
+      var sc_security = "4159c4ae";
+    </script>
+    <script type="text/javascript" src="https://www.statcounter.com/counter/counter_xhtml.js"></script>
+    <noscript>
+      <div class="statcounter"><a href="https://www.statcounter.com/" target="_blank"><img class="statcounter"
+            src="https://c36.statcounter.com/9064341/0/4159c4ae/1/" alt="hit counter html code"></a></div>
+    </noscript>
+
     <div class="footer-links">
       <a href="pages/about.html">About</a>
       <a href="pages/satoshiday.html">Satoshi Day</a>
@@ -270,32 +146,12 @@
       <a href="pages/tips.html">Tip Jar 😃</a>
     </div>
 
-    <div style="text-align:center; margin-top:2rem; font-size:0.85rem; color:var(--text-muted); font-weight:600;">SBC-v9.0.2</div>
+    <div style="text-align:center; margin-top:2rem; font-size:0.85rem; color:var(--text-muted); font-weight:600;">SBC-v9</div>
   </main>
 
+  <div class="toast" id="toast">Copied!</div>
+
   <script>
-    // Theme Logic
-    function toggleTheme() {
-      const html = document.documentElement;
-      const btn = document.getElementById('theme-toggle');
-      if (html.getAttribute('data-theme') === 'light') {
-        html.removeAttribute('data-theme');
-        btn.innerText = 'Light Mode';
-        localStorage.setItem('theme', 'dark');
-      } else {
-        html.setAttribute('data-theme', 'light');
-        btn.innerText = 'Dark Mode';
-        localStorage.setItem('theme', 'light');
-      }
-    }
-
-    // Initialize Theme
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'light') {
-      document.documentElement.setAttribute('data-theme', 'light');
-      document.getElementById('theme-toggle').innerText = 'Dark Mode';
-    }
-
     const state = {
       coin: 'BTC',
       fiat: 'USD',
@@ -307,6 +163,7 @@
     const coinSymbols = { BTC: "฿", ETH: "Ξ", LTC: "Ł", XRP: "ꭓ", SOL: "◎", DOGE: "Ð" };
     const fiatSymbols = { USD: "$", GBP: "£", EUR: "€", CAD: "C$", AUD: "A$", INR: "₹", JPY: "¥", KRW: "₩", CHF: "CHF" };
 
+    // UI Elements
     const elements = {
       inputCoin: document.getElementById('input-coin'),
       inputSats: document.getElementById('input-sats'),
@@ -317,12 +174,14 @@
       fiatLabel: document.getElementById('fiatLabel'),
       coinSymbolDisplay: document.getElementById('coinSymbolDisplay'),
       fiatSymbolDisplay: document.getElementById('fiatSymbolDisplay'),
-      tickerName: document.getElementById('tickerName')
+      tickerName: document.getElementById('tickerName'),
+      toast: document.getElementById('toast'),
     };
 
     const parseNum = (str) => {
         if(!str) return 0;
         let cleaned = str.toString().replace(/,/g, '');
+        if(cleaned.match(/[a-zA-Z]/)) return 0;
         let val = parseFloat(cleaned);
         return isNaN(val) ? 0 : val;
     };
@@ -340,35 +199,56 @@
     window.initSbcUi = function () {
       handleCoinChange();
       setupEventListeners();
+
       if (priceInterval) clearInterval(priceInterval);
-      priceInterval = setInterval(fetchPrices, 60000);
+      priceInterval = setInterval(fetchPrices, 60000); // Auto update every 1 minute
     };
 
     async function forceFetchPrices() {
       const btn = document.getElementById('refreshBtn');
       if (btn) btn.classList.add('spinning');
+
       await fetchPrices();
+
       if (btn) btn.classList.remove('spinning');
+      if (priceInterval) clearInterval(priceInterval);
+      priceInterval = setInterval(fetchPrices, 60000);
     }
 
     async function fetchPrices() {
       if(state.isFetching) return;
       state.isFetching = true;
       elements.coinPrice.style.opacity = '0.5';
+
       try {
         const res = await fetch(`https://min-api.cryptocompare.com/data/price?fsym=${state.coin}&tsyms=${state.fiat},BTC`);
         const data = await res.json();
+
+        if (data.Response === "Error") {
+          elements.coinPrice.innerText = "API Error";
+          return;
+        }
+
         state.priceFiat = parseFloat(data[state.fiat]) || 0;
         state.priceBtc = parseFloat(data["BTC"]) || (state.coin === "BTC" ? 1 : 0);
-        elements.coinPrice.innerText = `${fiatSymbols[state.fiat]||''}${formatNum(state.priceFiat, 2)}`;
+
+        elements.coinPrice.innerText = `${fiatSymbols[state.fiat]||''}${formatNum(state.priceFiat, 4)}`;
+
+        // Sats per fiat calculator
         if(state.priceBtc > 0 && state.priceFiat > 0) {
-            let satsPerFiat = (1 / state.priceFiat) * state.priceBtc * 100000000;
+            let oneFiatInCoin = 1 / state.priceFiat;
+            let oneFiatInBtc = oneFiatInCoin * state.priceBtc;
+            let satsPerFiat = oneFiatInBtc * 100000000;
             elements.satsPerDollar.innerText = `${Math.round(satsPerFiat).toLocaleString()} sats per ${fiatSymbols[state.fiat]||''}1`;
             elements.satsPerDollar.style.display = 'block';
+        } else {
+            elements.satsPerDollar.style.display = 'none';
         }
+
         recalculateFrom('coin');
       } catch (err) {
-        elements.coinPrice.innerText = "Error";
+        console.error(err);
+        elements.coinPrice.innerText = "Network Error";
       } finally {
         state.isFetching = false;
         elements.coinPrice.style.opacity = '1';
@@ -378,44 +258,123 @@
     function handleCoinChange() {
       const customCoin = document.getElementById('customCoin').value.trim().toUpperCase();
       const customFiat = document.getElementById('customFiat').value.trim().toUpperCase();
+
       state.coin = customCoin || document.getElementById('altcoin').value;
       state.fiat = customFiat || document.getElementById('fiat').value;
+
+      document.getElementById('customCoin').value = customCoin;
+      document.getElementById('customFiat').value = customFiat;
+
       elements.coinLabel.innerText = state.coin;
       elements.fiatLabel.innerText = state.fiat;
       elements.coinSymbolDisplay.innerText = coinSymbols[state.coin] || '';
       elements.fiatSymbolDisplay.innerText = fiatSymbols[state.fiat] || '';
       elements.tickerName.innerText = state.coin;
+
+      // Update theme colors
+      const root = document.documentElement;
+      if (state.coin === 'ETH') {
+        root.style.setProperty('--accent', '#8b5cf6');
+        root.style.setProperty('--accent-glow', 'rgba(139, 92, 246, 0.4)');
+      } else if (state.coin === 'SOL') {
+        root.style.setProperty('--accent', '#14b8a6');
+        root.style.setProperty('--accent-glow', 'rgba(20, 184, 166, 0.4)');
+      } else if (state.coin === 'LTC') {
+        root.style.setProperty('--accent', '#94a3b8');
+        root.style.setProperty('--accent-glow', 'rgba(148, 163, 184, 0.4)');
+      } else {
+        root.style.setProperty('--accent', '#f59e0b');
+        root.style.setProperty('--accent-glow', 'rgba(245, 158, 11, 0.4)');
+      }
+
       fetchPrices();
     }
 
     function recalculateFrom(source) {
       if(!state.priceFiat) return;
+
       if (source === 'coin') {
         let val = parseNum(elements.inputCoin.value);
-        let satsVal = val * state.priceBtc * 100000000;
+        if(val === 0 && !elements.inputCoin.value) {
+           elements.inputSats.value = ''; elements.inputUsd.value = ''; return;
+        }
+        let btcVal = val * state.priceBtc;
+        let satsVal = btcVal * 100000000;
         let fiatVal = val * state.priceFiat;
+
         elements.inputSats.value = formatNum(satsVal, 0);
-        elements.inputUsd.value = formatNum(fiatVal, 2);
-      } else if (source === 'sats') {
+        elements.inputUsd.value = formatNum(fiatVal, 4);
+      }
+      else if (source === 'sats') {
         let val = parseNum(elements.inputSats.value);
-        let coinVal = (val / 100000000) / state.priceBtc;
+        if(val === 0 && !elements.inputSats.value) {
+           elements.inputCoin.value = ''; elements.inputUsd.value = ''; return;
+        }
+        let btcVal = val / 100000000;
+        let coinVal = btcVal / state.priceBtc;
+        let fiatVal = coinVal * state.priceFiat;
+
         elements.inputCoin.value = formatNum(coinVal, 8);
-        elements.inputUsd.value = formatNum(coinVal * state.priceFiat, 2);
-      } else if (source === 'fiat') {
+        elements.inputUsd.value = formatNum(fiatVal, 4);
+      }
+      else if (source === 'fiat') {
         let val = parseNum(elements.inputUsd.value);
+        if(val === 0 && !elements.inputUsd.value) {
+           elements.inputCoin.value = ''; elements.inputSats.value = ''; return;
+        }
         let coinVal = val / state.priceFiat;
+        let btcVal = coinVal * state.priceBtc;
+        let satsVal = btcVal * 100000000;
+
         elements.inputCoin.value = formatNum(coinVal, 8);
-        elements.inputSats.value = formatNum(coinVal * state.priceBtc * 100000000, 0);
+        elements.inputSats.value = formatNum(satsVal, 0);
       }
     }
 
     function setupEventListeners() {
-      elements.inputCoin.addEventListener('input', () => recalculateFrom('coin'));
-      elements.inputSats.addEventListener('input', () => recalculateFrom('sats'));
-      elements.inputUsd.addEventListener('input', () => recalculateFrom('fiat'));
+      // Inputs
+      elements.inputCoin.addEventListener('input', (e) => recalculateFrom('coin'));
+      elements.inputSats.addEventListener('input', (e) => recalculateFrom('sats'));
+      elements.inputUsd.addEventListener('input', (e) => recalculateFrom('fiat'));
+
+      // Clean on focus
+      [elements.inputCoin, elements.inputSats, elements.inputUsd].forEach(input => {
+        input.addEventListener('focus', () => {
+           if(input.value) {
+               input.value = input.value.replace(/,/g, '');
+           }
+        });
+        input.addEventListener('blur', () => {
+           recalculateFrom(input.id.replace('input-', ''));
+        });
+      });
+
+      // Copy on click of labels/symbols
+      document.querySelectorAll('.input-wrapper').forEach(wrapper => {
+        wrapper.addEventListener('dblclick', () => {
+           const input = wrapper.querySelector('input');
+           if(input.value) {
+               navigator.clipboard.writeText(input.value.replace(/,/g, ''));
+               showToast();
+           }
+        });
+      });
     }
 
-    setTimeout(() => { window.initSbcUi(); }, 500);
+    function showToast() {
+      elements.toast.classList.add('show');
+      if (navigator.vibrate) navigator.vibrate(50);
+      setTimeout(() => {
+        elements.toast.classList.remove('show');
+      }, 2000);
+    }
+
+    // Fallback if PWA script fails
+    setTimeout(() => {
+        if(!elements.coinPrice.innerText || elements.coinPrice.innerText === "Loading...") {
+            window.initSbcUi();
+        }
+    }, 1000);
   </script>
 </body>
 </html>

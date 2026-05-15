@@ -136,8 +136,4 @@
     padding-left: 0.15rem;
   }
 
-  .page-header h1 {
-    font-size: clamp(1rem, 5vw, 1.35rem);
-    padding-right: 2.75rem;
-  }
 }

@@ -14,8 +14,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <meta name="theme-color" content="#0a0a0c" id="themeColorMeta">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../src/style.css">
+  <link rel="stylesheet" href="../src/theme.css">
+  <script src="../src/theme.js"></script>
 
 </head>
 
@@ -28,7 +31,13 @@
 
 <a name="home_top_page"></a>
 
-    <header>
+    <header class="page-header">
+    <button type="button" class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle light/dark theme" title="Toggle theme">
+      <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+
+      
       <h1><a href="../index.html">シ Satoshi Bitcoin Converter</a></h1>
       <p style="font-size:0.8rem; color:var(--text-muted); margin-top:-1.2rem; font-weight:600;">v9</p>
     </header>
@@ -654,12 +663,12 @@ areas :
 },
 areasSettings : {
 autoZoom : true,
-color : "#334155",
+color : "#3f3f46",
 colorSolid : "#f59e0b",
 selectedColor : "#f59e0b",
-outlineColor : "#1e293b",
-rollOverColor : "#38bdf8",
-rollOverOutlineColor : "#0f172a"
+outlineColor : "#27272a",
+rollOverColor : "#fbbf24",
+rollOverOutlineColor : "#0a0a0c"
 }
 });
 </script>
@@ -671,7 +680,7 @@ Contact info and other links at: <a href="https://linktr.ee/crrdlx" target="_bla
 <p></p>
 Sincerely,
 <p></p>
-<p style="font-family:cursive; color:darkgreen; font-size: 22px;"><big>crrdlx (CR for short)</big></p>
+<p style="font-family:cursive; color:var(--accent); font-size: 22px;"><big>crrdlx (CR for short)</big></p>
 
 <center>
 <img src="../img/icon_120.png" border="0" width=18>

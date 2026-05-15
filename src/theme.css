@@ -1,0 +1,200 @@
+/* Gray cypherpunk theme — shared across SBC v9 */
+@import url('pages.css');
+:root,
+html[data-theme="dark"] {
+  --bg: #0a0a0c;
+  --bg-grid: rgba(245, 158, 11, 0.04);
+  --bg-glow-a: rgba(113, 113, 122, 0.12);
+  --bg-glow-b: rgba(245, 158, 11, 0.07);
+  --card-bg: rgba(22, 22, 26, 0.88);
+  --card-border: rgba(113, 113, 122, 0.28);
+  --text-main: #e4e4e7;
+  --text-muted: #71717a;
+  --text-card: #a1a1aa;
+  --accent: #f59e0b;
+  --accent-glow: rgba(245, 158, 11, 0.35);
+  --accent-dim: rgba(245, 158, 11, 0.12);
+  --accent-border: rgba(245, 158, 11, 0.28);
+  --input-bg: rgba(10, 10, 12, 0.65);
+  --input-overlay: rgba(0, 0, 0, 0.35);
+  --badge-bg: rgba(161, 161, 170, 0.12);
+  --link-color: #fbbf24;
+  --link-hover: #fcd34d;
+  --toast-text: #0a0a0c;
+  --scanline: rgba(0, 0, 0, 0.15);
+  --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;
+}
+
+html[data-theme="light"] {
+  --bg: #e4e4e7;
+  --bg-grid: rgba(217, 119, 6, 0.07);
+  --bg-glow-a: rgba(113, 113, 122, 0.14);
+  --bg-glow-b: rgba(245, 158, 11, 0.1);
+  --card-bg: rgba(250, 250, 250, 0.92);
+  --card-border: rgba(113, 113, 122, 0.35);
+  --text-main: #18181b;
+  --text-muted: #52525b;
+  --text-card: #3f3f46;
+  --accent: #d97706;
+  --accent-glow: rgba(217, 119, 6, 0.28);
+  --accent-dim: rgba(217, 119, 6, 0.1);
+  --accent-border: rgba(217, 119, 6, 0.32);
+  --input-bg: rgba(255, 255, 255, 0.75);
+  --input-overlay: rgba(0, 0, 0, 0.04);
+  --badge-bg: rgba(113, 113, 122, 0.14);
+  --link-color: #b45309;
+  --link-hover: #d97706;
+  --toast-text: #0a0a0c;
+  --scanline: rgba(255, 255, 255, 0.35);
+}
+
+body {
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(var(--bg-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--bg-grid) 1px, transparent 1px),
+    radial-gradient(circle at 12% 18%, var(--bg-glow-a), transparent 38%),
+    radial-gradient(circle at 88% 82%, var(--bg-glow-b), transparent 38%);
+  background-size: 24px 24px, 24px 24px, auto, auto;
+  font-family: var(--font-mono);
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    var(--scanline) 2px,
+    var(--scanline) 4px
+  );
+  opacity: 0.35;
+  z-index: 9999;
+}
+
+a:hover {
+  color: var(--link-hover);
+}
+
+header,
+.page-header {
+  position: relative;
+}
+
+header.page-header,
+.page-container header {
+  width: 100%;
+}
+
+header h1 a,
+.page-header h1 a {
+  color: var(--text-main);
+  text-shadow: 0 0 20px var(--accent-glow);
+}
+
+.glass-card {
+  box-shadow: 0 0 0 1px var(--card-border), 0 20px 50px -16px rgba(0, 0, 0, 0.45);
+}
+
+.glass-card::before {
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  height: 2px;
+  opacity: 0.85;
+}
+
+.glass-card p,
+.glass-card ul,
+.glass-card ol,
+.glass-card li {
+  color: var(--text-card);
+}
+
+.glass-card th,
+.glass-card td {
+  color: var(--text-card);
+}
+
+.footer-links a:hover {
+  background: var(--badge-bg);
+  color: var(--accent);
+}
+
+.theme-toggle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 8px;
+  border: 1px solid var(--card-border);
+  background: var(--card-bg);
+  color: var(--accent);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: border-color 0.25s, box-shadow 0.25s, color 0.25s;
+  box-shadow: 0 0 12px var(--accent-glow);
+  z-index: 1;
+}
+
+.theme-toggle:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 16px var(--accent-glow);
+}
+
+.theme-toggle svg {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+html[data-theme="dark"] .theme-toggle .icon-sun { display: block; }
+html[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
+html[data-theme="light"] .theme-toggle .icon-sun { display: none; }
+html[data-theme="light"] .theme-toggle .icon-moon { display: block; }
+
+/* Privacy page legacy style overrides */
+body {
+  background-color: var(--bg) !important;
+  color: var(--text-main) !important;
+  font-family: var(--font-mono) !important;
+  max-width: none !important;
+  width: auto !important;
+}
+
+main.page-container a {
+  color: var(--link-color);
+  font-size: inherit;
+}
+
+main.page-container a:visited {
+  color: var(--link-color);
+  opacity: 0.85;
+}
+
+main.page-container a:hover {
+  background: var(--badge-bg);
+  color: var(--link-hover);
+}
+
+main.page-container a:active {
+  background-color: var(--accent-dim);
+  color: var(--accent);
+}
+
+main.page-container h1,
+main.page-container h2,
+main.page-container h3,
+main.page-container h4,
+main.page-container h5,
+main.page-container h6 {
+  color: var(--text-main);
+}
+
+main.page-container h2 {
+  border-bottom-color: var(--accent-border);
+}

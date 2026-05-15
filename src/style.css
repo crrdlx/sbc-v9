@@ -1,24 +1,7 @@
-:root {
-  --bg: #0f172a;
-  --card-bg: rgba(30, 41, 59, 0.7);
-  --card-border: rgba(255, 255, 255, 0.1);
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  --accent: #f59e0b;
-  --accent-glow: rgba(245, 158, 11, 0.4);
-  --input-bg: rgba(15, 23, 42, 0.5);
-  --link-color: #38bdf8;
-}
-
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  background: var(--bg);
-  background-image: 
-    radial-gradient(circle at 15% 30%, rgba(245, 158, 11, 0.08), transparent 30%),
-    radial-gradient(circle at 85% 70%, rgba(56, 189, 248, 0.08), transparent 30%);
   color: var(--text-main);
-  font-family: 'Outfit', sans-serif;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -31,11 +14,6 @@ a {
   color: var(--link-color);
   text-decoration: none;
   transition: all 0.2s;
-}
-
-a:hover {
-  text-decoration: underline;
-  color: #7dd3fc;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -88,7 +66,6 @@ main {
   border: 1px solid var(--card-border);
   border-radius: 28px;
   padding: 1.25rem 1rem;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   position: relative;
   overflow: hidden;
   transition: all 0.5s ease;
@@ -98,20 +75,7 @@ main {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0; height: 4px;
-  background: linear-gradient(90deg, var(--accent), #fcd34d);
   transition: all 0.5s ease;
-}
-
-/* Page specific text styles */
-.glass-card p {
-  margin-bottom: 1rem;
-  color: #cbd5e1;
-}
-
-.glass-card ul, .glass-card ol {
-  margin-bottom: 1rem;
-  padding-left: 2rem;
-  color: #cbd5e1;
 }
 
 .glass-card table {
@@ -124,13 +88,13 @@ main {
   padding: 8px;
 }
 .glass-card tr:nth-child(even) {
-  background: rgba(255,255,255,0.02);
+  background: var(--badge-bg);
 }
 
 .beta-badge {
   font-size: 0.75rem;
   background: var(--accent);
-  color: #000;
+  color: var(--toast-text);
   padding: 0.15rem 0.5rem;
   border-radius: 8px;
   font-weight: 800;
@@ -155,7 +119,7 @@ main {
   border-color: var(--accent);
   text-decoration: none;
   box-shadow: 0 0 10px var(--accent-glow);
-  color: #fff;
+  color: var(--accent);
 }
 
 .footer-links {
@@ -176,7 +140,7 @@ main {
 }
 .footer-links a:hover {
   color: var(--text-main);
-  background: rgba(255,255,255,0.05);
+  background: var(--badge-bg);
 }
 
 @keyframes fadeInUp {

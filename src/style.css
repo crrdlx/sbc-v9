@@ -25,7 +25,6 @@ h1, h2, h3, h4, h5, h6 {
 
 header,
 .page-header {
-  container-type: inline-size;
   width: 100%;
 }
 
@@ -37,30 +36,25 @@ header {
 
 header h1,
 .page-header h1 {
-  font-size: clamp(0.72rem, 6cqi, 2.25rem);
+  font-size: clamp(0.62rem, 2.75vw + 0.35rem, 1.35rem);
   font-weight: 800;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.03em;
   color: var(--text-main);
   display: block;
   white-space: nowrap;
   line-height: 1.25;
   text-align: center;
   max-width: 100%;
-  padding: 0 2.5rem;
+  padding: 0 2.6rem;
   margin-left: auto;
   margin-right: auto;
   box-sizing: border-box;
 }
 
-@supports not (font-size: 1cqi) {
-  header h1,
-  .page-header h1 {
-    font-size: clamp(0.72rem, 2.9vw + 0.4rem, 2.25rem);
-  }
-}
 header h1 a,
 .page-header h1 a {
   color: var(--text-main);
+  font-weight: 800;
 }
 header h1 a:hover {
   text-decoration: none;

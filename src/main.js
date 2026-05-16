@@ -2,64 +2,79 @@ var serviceWorkerRegistration = null;
 
 var app = new App();
 
+function getAppBaseUrl()
+{
+	var manifestLink = document.querySelector( 'link[rel="manifest"]' );
+	if ( manifestLink && manifestLink.href )
+	{
+		return new URL( ".", manifestLink.href ).href;
+	}
+	return new URL( "./", window.location.href ).href;
+}
 
+function registerServiceWorker()
+{
+	if ( !( "serviceWorker" in navigator ) )
+	{
+		return;
+	}
+
+	var base = getAppBaseUrl();
+	var swUrl = new URL( "sw.js", base ).href;
+
+	navigator.serviceWorker.register( swUrl, { scope: base } ).then( function( reg )
+	{
+		console.log( "service worker has been registered successfully" );
+		serviceWorkerRegistration = reg;
+	} ).catch( function( error )
+	{
+		console.log( "failed to register service worker", error );
+	} );
+}
 
 function init()
 {
-    // service worker
-    if ( "serviceWorker" in navigator ) 
-    {
-        // register the service worker
-        navigator.serviceWorker.register( "sw.js" ).then( ( reg ) =>
-        {
-            console.log( "service worker has been registered successfully" );
-            serviceWorkerRegistration = reg;
-        }
-        ).catch( ( error ) =>
-        {
-            console.log( "failed to register service worker" , error );
-        });
-    }
+	registerServiceWorker();
 
-    // check whether in online or offline mode
-    if ( navigator.onLine )
-    {
-        console.log( "online mode" );
-    }
-    else 
-    {
-        console.log( "offline mode" );
-    }
+	if ( navigator.onLine )
+	{
+		console.log( "online mode" );
+	}
+	else
+	{
+		console.log( "offline mode" );
+	}
 
-    // event listener when going online
-    window.addEventListener( "online" , ( event ) =>
-    {
-        console.log( "online event" );
-        if ( typeof window.updatePrices === "function" )
-        {
-            window.updatePrices();
-        }
-    });
+	window.addEventListener( "online", function()
+	{
+		console.log( "online event" );
+		if ( typeof window.updatePrices === "function" )
+		{
+			window.updatePrices();
+		}
+		else if ( typeof window.forceFetchPrices === "function" )
+		{
+			window.forceFetchPrices();
+		}
+	} );
 
-    // event listener when going offline
-    window.addEventListener( "offline" , ( event ) =>
-    {
-        console.log( "offline event" );
-    });
+	window.addEventListener( "offline", function()
+	{
+		console.log( "offline event" );
+	} );
 
-    // app install banner -- may not work on every platform
-    window.addEventListener( "beforeinstallprompt" , ( event ) =>
-    {
-        event.userChoice.then( ( choiceResult ) =>
-        {
-            console.log( choiceResult.outcome ); // either "accepted" or "dismissed"
-        });
-    });
+	window.addEventListener( "beforeinstallprompt", function( event )
+	{
+		event.userChoice.then( function( choiceResult )
+		{
+			console.log( choiceResult.outcome );
+		} );
+	} );
 
-    app.start();
+	app.start();
 
-    if ( typeof window.initSbcUi === "function" )
-    {
-        window.initSbcUi();
-    }
+	if ( typeof window.initSbcUi === "function" )
+	{
+		window.initSbcUi();
+	}
 }

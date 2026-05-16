@@ -9,6 +9,10 @@ var precacheRelative = [
 	"manifest.json",
 	"src/App.js",
 	"src/main.js",
+	"src/theme.js",
+	"src/style.css",
+	"src/theme.css",
+	"src/index.css",
 	"img/favicon.png",
 	"img/refresh.png",
 	"img/icon_120.png",
@@ -89,12 +93,12 @@ self.addEventListener( "fetch", ( event ) =>
 		return;
 	}
 
-	// Root URL → cached index.html (offline home)
-	if ( url.pathname === "/" || url.pathname === "" )
+	// Navigation (install / offline open): network first, fall back to app shell
+	if ( event.request.mode === "navigate" )
 	{
 		event.respondWith(
-			caches.match( precacheUrl( "index.html" ) ).then( ( cached ) =>
-				cached || fetch( event.request )
+			fetch( event.request ).catch( () =>
+				caches.match( precacheUrl( "index.html" ) )
 			)
 		);
 		return;

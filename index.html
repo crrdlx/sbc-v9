@@ -1,4 +1,4 @@
-<!-- version 9.0.0 -->
+<!-- version 9.0.2 -->
 <!doctype html>
 <html lang="en">
 <head>
@@ -9,6 +9,10 @@
   <meta name="description" content="Convert between Bitcoin, altcoins, satoshis, and fiat currencies like USD, GBP, and more.">
   <link rel="icon" type="image/png" href="img/favicon.png">
   <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="img/icon_180.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Satoshi">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -170,6 +174,20 @@
       }).format(num);
     };
 
+    const priceDisplayDecimals = (price, coin) => {
+      if (coin === 'BTC') return 2;
+      if (price >= 1) return 2;
+      if (price >= 0.01) return 4;
+      return 6;
+    };
+
+    const forceUppercase = (input) => {
+      const start = input.selectionStart;
+      const end = input.selectionEnd;
+      input.value = input.value.toUpperCase();
+      input.setSelectionRange(start, end);
+    };
+
     let priceInterval = null;
 
     window.initSbcUi = function () {
@@ -208,7 +226,8 @@
         state.priceFiat = parseFloat(data[state.fiat]) || 0;
         state.priceBtc = parseFloat(data["BTC"]) || (state.coin === "BTC" ? 1 : 0);
 
-        elements.coinPrice.innerText = `${fiatSymbols[state.fiat]||''}${formatNum(state.priceFiat, 4)}`;
+        const priceDecimals = priceDisplayDecimals(state.priceFiat, state.coin);
+        elements.coinPrice.innerText = `${fiatSymbols[state.fiat]||''}${formatNum(state.priceFiat, priceDecimals)}`;
 
         // Sats per fiat calculator
         if(state.priceBtc > 0 && state.priceFiat > 0) {
@@ -317,6 +336,11 @@
     }
 
     function setupEventListeners() {
+      const customCoin = document.getElementById('customCoin');
+      const customFiat = document.getElementById('customFiat');
+      customCoin.addEventListener('input', () => forceUppercase(customCoin));
+      customFiat.addEventListener('input', () => forceUppercase(customFiat));
+
       // Inputs
       elements.inputCoin.addEventListener('input', (e) => recalculateFrom('coin'));
       elements.inputSats.addEventListener('input', (e) => recalculateFrom('sats'));

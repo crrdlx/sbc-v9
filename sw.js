@@ -4,6 +4,7 @@ var cacheName = "v" + serviceWorkerCacheVersion + ":static";
 
 // Same-origin assets only (reliable offline shell). CDN URLs use network-first below.
 var precacheRelative = [
+	"./",
 	"index.html",
 	"config.js",
 	"manifest.json",

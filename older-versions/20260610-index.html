@@ -144,15 +144,6 @@
     const coinSymbols = { BTC: "฿", ETH: "Ξ", LTC: "Ł", XRP: "ꭓ", SOL: "◎", DOGE: "Ð" };
     const fiatSymbols = { USD: "$", GBP: "£", EUR: "€", CAD: "C$", AUD: "A$", INR: "₹", JPY: "¥", KRW: "₩", CHF: "CHF" };
 
-    // CoinGecko requires full coin IDs, not tickers. Unknown tickers fall back to a
-    // lower-cased search guess which CoinGecko usually resolves correctly.
-    const geckoIds = {
-      BTC: "bitcoin", ETH: "ethereum", LTC: "litecoin", XRP: "ripple",
-      SOL: "solana", DOGE: "dogecoin", ADA: "cardano", DOT: "polkadot",
-      AVAX: "avalanche-2", MATIC: "matic-network", LINK: "chainlink",
-      UNI: "uniswap", ATOM: "cosmos", BCH: "bitcoin-cash", TRX: "tron"
-    };
-
     // UI Elements
     const elements = {
       inputCoin: document.getElementById('input-coin'),
@@ -225,47 +216,29 @@
       elements.coinPrice.style.opacity = '0.5';
 
       try {
-        const coinId = geckoIds[state.coin] || state.coin.toLowerCase();
-        const vsCurrency = state.fiat.toLowerCase();
-
-        // Single call: fetch coin price in fiat AND in BTC (for sats math on altcoins).
-        // If coin IS bitcoin, btcPrice will just be 1.
-        const ids = state.coin === 'BTC'
-          ? 'bitcoin'
-          : `${coinId},bitcoin`;
-        const url = `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=${vsCurrency},btc`;
-
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const res = await fetch(`https://min-api.cryptocompare.com/data/price?fsym=${state.coin}&tsyms=${state.fiat},BTC`);
         const data = await res.json();
 
-        const coinData = data[coinId];
-        if (!coinData) {
+        if (data.Response === "Error") {
           elements.coinPrice.innerText = "API Error";
           return;
         }
 
-        state.priceFiat = parseFloat(coinData[vsCurrency]) || 0;
-        // For BTC itself priceBtc is always 1; for altcoins grab their BTC price
-        state.priceBtc = state.coin === 'BTC'
-          ? 1
-          : parseFloat(coinData['btc']) || 0;
+        state.priceFiat = parseFloat(data[state.fiat]) || 0;
+        state.priceBtc = parseFloat(data["BTC"]) || (state.coin === "BTC" ? 1 : 0);
 
         const priceDecimals = priceDisplayDecimals(state.priceFiat, state.coin);
         elements.coinPrice.innerText = `${fiatSymbols[state.fiat]||''}${formatNum(state.priceFiat, priceDecimals)}`;
 
         // Sats per fiat calculator
-        if(state.priceFiat > 0) {
-          const btcPerFiatUnit = state.coin === 'BTC'
-            ? 1 / state.priceFiat
-            : (data['bitcoin']?.[vsCurrency]
-                ? 1 / parseFloat(data['bitcoin'][vsCurrency])
-                : state.priceBtc / state.priceFiat);
-          const satsPerFiat = btcPerFiatUnit * 100000000;
-          elements.satsPerDollar.innerText = `${Math.round(satsPerFiat).toLocaleString()} sats per ${fiatSymbols[state.fiat]||''}1`;
-          elements.satsPerDollar.style.display = 'block';
+        if(state.priceBtc > 0 && state.priceFiat > 0) {
+            let oneFiatInCoin = 1 / state.priceFiat;
+            let oneFiatInBtc = oneFiatInCoin * state.priceBtc;
+            let satsPerFiat = oneFiatInBtc * 100000000;
+            elements.satsPerDollar.innerText = `${Math.round(satsPerFiat).toLocaleString()} sats per ${fiatSymbols[state.fiat]||''}1`;
+            elements.satsPerDollar.style.display = 'block';
         } else {
-          elements.satsPerDollar.style.display = 'none';
+            elements.satsPerDollar.style.display = 'none';
         }
 
         recalculateFrom('coin');

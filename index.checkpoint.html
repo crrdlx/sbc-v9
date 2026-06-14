@@ -1,58 +1,39 @@
-<!-- version 9.0.0 -->
+<!-- version 9.0.2 coingecko api -->
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Satoshi Bitcoin Converter v9</title>
   <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-  <meta name="theme-color" content="#0f172a">
+  <meta name="theme-color" content="#0a0a0c" id="themeColorMeta">
   <meta name="description" content="Convert between Bitcoin, altcoins, satoshis, and fiat currencies like USD, GBP, and more.">
   <link rel="icon" type="image/png" href="img/favicon.png">
   <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="img/icon_180.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Satoshi">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <script src="config.js"></script>
   <script src="src/App.js"></script>
   <script src="src/main.js"></script>
+  <script src="src/theme.js"></script>
 
   <link rel="stylesheet" href="src/style.css">
-  <style>
-    /* Index specific */
-    .selector-row { display: flex; gap: 0.75rem; margin-bottom: 1.25rem; }
-    .select-group { flex: 1; display: flex; flex-direction: column; gap: 0.25rem; }
-    .select-group label { font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
-    select, input[type="text"] { background: var(--input-bg); border: 1px solid var(--card-border); color: var(--text-main); font-family: inherit; padding: 0.6rem 0.75rem; border-radius: 12px; font-size: 0.95rem; outline: none; transition: all 0.3s ease; width: 100%; }
-    select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 1em; }
-    select:focus, input[type="text"]:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-glow); }
-    .converter-row { margin-bottom: 1rem; position: relative; }
-    .converter-row label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem; font-size: 0.85rem; color: var(--text-muted); }
-    .input-wrapper { position: relative; display: flex; align-items: center; }
-    .symbol-prefix { position: absolute; left: 1rem; font-size: 1.1rem; color: var(--text-muted); font-family: 'Space Grotesk', sans-serif; pointer-events: none; }
-    .converter-row input { font-family: 'Space Grotesk', monospace; font-size: 1.35rem; font-weight: 700; padding: 0.75rem 1rem 0.75rem 2.25rem; height: 56px; background: rgba(0,0,0,0.2); }
-    .unit-badge { background: rgba(255,255,255,0.08); padding: 0.2rem 0.5rem; border-radius: 6px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px; pointer-events: none; }
-    .price-ticker { margin-top: 1.25rem; text-align: center; padding-top: 1.25rem; border-top: 1px solid var(--card-border); }
-    .price-ticker p { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem; }
-
-    @keyframes pulse-box { 0% { box-shadow: 0 0 0 0 var(--accent-glow); } 60% { box-shadow: 0 0 0 6px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
-    .live-price { font-family: 'Space Grotesk', monospace; font-size: 1.8rem; font-weight: 700; color: var(--accent); border: 1px solid var(--accent); padding: 0.25rem 1.25rem; border-radius: 12px; display: inline-block; background: rgba(0,0,0,0.2); transition: color 0.5s ease; animation: pulse-box 4s infinite ease-out; }
-
-    .sats-per-dollar { margin-top: 0.75rem; text-align: center; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); color: #34d399; padding: 0.6rem; border-radius: 12px; font-weight: 600; font-size: 0.85rem; }
-    .refresh-btn { margin-top: 0.5rem; background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.5rem; transition: color 0.3s, transform 0.3s; display: inline-flex; align-items: center; justify-content: center; padding: 0.5rem; border-radius: 50%; }
-    .refresh-btn:hover { color: var(--accent); background: rgba(255,255,255,0.05); }
-    .refresh-btn.spinning svg { animation: spin 1s linear infinite; }
-    @keyframes spin { 100% { transform: rotate(360deg); } }
-    .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--accent); color: #000; padding: 0.75rem 2rem; border-radius: 50px; font-weight: 700; opacity: 0; transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); z-index: 1000; box-shadow: 0 10px 25px var(--accent-glow); }
-    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-    .custom-inputs { display: flex; gap: 0.5rem; margin-top: 0.5rem;}
-    .custom-inputs input { padding: 0.5rem 0.75rem; font-size: 0.8rem; background: rgba(0,0,0,0.2); }
-    @media (max-width: 480px) { .glass-card { padding: 1.25rem; border-radius: 20px; } .converter-row input { font-size: 1.2rem; height: 50px; } }
-  </style>
+  <link rel="stylesheet" href="src/theme.css">
+  <link rel="stylesheet" href="src/index.css">
 </head>
 
 <body onload="init()">
   <header>
+    <button type="button" id="installBtn" class="install-btn" hidden aria-label="Install app" title="Install app">Install</button>
+    <button type="button" class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle light/dark theme" title="Toggle theme">
+      <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
     <h1><a href="index.html" style="text-decoration:none">シ Satoshi Bitcoin Converter</a></h1>
   </header>
 
@@ -62,7 +43,7 @@
         <div class="select-group">
           <label>Asset</label>
           <select id="altcoin" onchange="handleCoinChange()">
-            <option value="BTC" selected>฿ Bitcoin (BTC)</option>
+            <option value="BTC" selected>฿ Bitcoin</option>
             <option value="ETH">Ξ Ethereum (ETH)</option>
             <option value="LTC">Ł Litecoin (LTC)</option>
             <option value="XRP">ꭓ Ripple (XRP)</option>
@@ -121,7 +102,7 @@
             <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
           </button>
         </div>
-        <div class="sats-per-dollar" id="satsPerDollar" style="display: none;">-- sats per $1</div>
+        <a href="pages/satoshiday.html" class="sats-per-dollar" id="satsPerDollar" style="display: none; text-decoration: none;">-- sats per $1</a>
       </div>
     </div>
 
@@ -163,6 +144,15 @@
     const coinSymbols = { BTC: "฿", ETH: "Ξ", LTC: "Ł", XRP: "ꭓ", SOL: "◎", DOGE: "Ð" };
     const fiatSymbols = { USD: "$", GBP: "£", EUR: "€", CAD: "C$", AUD: "A$", INR: "₹", JPY: "¥", KRW: "₩", CHF: "CHF" };
 
+    // CoinGecko requires full coin IDs, not tickers. Unknown tickers fall back to a
+    // lower-cased search guess which CoinGecko usually resolves correctly.
+    const geckoIds = {
+      BTC: "bitcoin", ETH: "ethereum", LTC: "litecoin", XRP: "ripple",
+      SOL: "solana", DOGE: "dogecoin", ADA: "cardano", DOT: "polkadot",
+      AVAX: "avalanche-2", MATIC: "matic-network", LINK: "chainlink",
+      UNI: "uniswap", ATOM: "cosmos", BCH: "bitcoin-cash", TRX: "tron"
+    };
+
     // UI Elements
     const elements = {
       inputCoin: document.getElementById('input-coin'),
@@ -194,6 +184,20 @@
       }).format(num);
     };
 
+    const priceDisplayDecimals = (price, coin) => {
+      if (coin === 'BTC') return 2;
+      if (price >= 1) return 2;
+      if (price >= 0.01) return 4;
+      return 6;
+    };
+
+    const forceUppercase = (input) => {
+      const start = input.selectionStart;
+      const end = input.selectionEnd;
+      input.value = input.value.toUpperCase();
+      input.setSelectionRange(start, end);
+    };
+
     let priceInterval = null;
 
     window.initSbcUi = function () {
@@ -221,28 +225,47 @@
       elements.coinPrice.style.opacity = '0.5';
 
       try {
-        const res = await fetch(`https://min-api.cryptocompare.com/data/price?fsym=${state.coin}&tsyms=${state.fiat},BTC`);
+        const coinId = geckoIds[state.coin] || state.coin.toLowerCase();
+        const vsCurrency = state.fiat.toLowerCase();
+
+        // Single call: fetch coin price in fiat AND in BTC (for sats math on altcoins).
+        // If coin IS bitcoin, btcPrice will just be 1.
+        const ids = state.coin === 'BTC'
+          ? 'bitcoin'
+          : `${coinId},bitcoin`;
+        const url = `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=${vsCurrency},btc`;
+
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
 
-        if (data.Response === "Error") {
+        const coinData = data[coinId];
+        if (!coinData) {
           elements.coinPrice.innerText = "API Error";
           return;
         }
 
-        state.priceFiat = parseFloat(data[state.fiat]) || 0;
-        state.priceBtc = parseFloat(data["BTC"]) || (state.coin === "BTC" ? 1 : 0);
+        state.priceFiat = parseFloat(coinData[vsCurrency]) || 0;
+        // For BTC itself priceBtc is always 1; for altcoins grab their BTC price
+        state.priceBtc = state.coin === 'BTC'
+          ? 1
+          : parseFloat(coinData['btc']) || 0;
 
-        elements.coinPrice.innerText = `${fiatSymbols[state.fiat]||''}${formatNum(state.priceFiat, 4)}`;
+        const priceDecimals = priceDisplayDecimals(state.priceFiat, state.coin);
+        elements.coinPrice.innerText = `${fiatSymbols[state.fiat]||''}${formatNum(state.priceFiat, priceDecimals)}`;
 
         // Sats per fiat calculator
-        if(state.priceBtc > 0 && state.priceFiat > 0) {
-            let oneFiatInCoin = 1 / state.priceFiat;
-            let oneFiatInBtc = oneFiatInCoin * state.priceBtc;
-            let satsPerFiat = oneFiatInBtc * 100000000;
-            elements.satsPerDollar.innerText = `${Math.round(satsPerFiat).toLocaleString()} sats per ${fiatSymbols[state.fiat]||''}1`;
-            elements.satsPerDollar.style.display = 'block';
+        if(state.priceFiat > 0) {
+          const btcPerFiatUnit = state.coin === 'BTC'
+            ? 1 / state.priceFiat
+            : (data['bitcoin']?.[vsCurrency]
+                ? 1 / parseFloat(data['bitcoin'][vsCurrency])
+                : state.priceBtc / state.priceFiat);
+          const satsPerFiat = btcPerFiatUnit * 100000000;
+          elements.satsPerDollar.innerText = `${Math.round(satsPerFiat).toLocaleString()} sats per ${fiatSymbols[state.fiat]||''}1`;
+          elements.satsPerDollar.style.display = 'block';
         } else {
-            elements.satsPerDollar.style.display = 'none';
+          elements.satsPerDollar.style.display = 'none';
         }
 
         recalculateFrom('coin');
@@ -271,20 +294,29 @@
       elements.fiatSymbolDisplay.innerText = fiatSymbols[state.fiat] || '';
       elements.tickerName.innerText = state.coin;
 
-      // Update theme colors
+      // Update theme colors (gray cypherpunk accents per asset)
       const root = document.documentElement;
+      const isLight = root.getAttribute('data-theme') === 'light';
       if (state.coin === 'ETH') {
-        root.style.setProperty('--accent', '#8b5cf6');
-        root.style.setProperty('--accent-glow', 'rgba(139, 92, 246, 0.4)');
+        root.style.setProperty('--accent', isLight ? '#6d28d9' : '#a78bfa');
+        root.style.setProperty('--accent-glow', isLight ? 'rgba(109, 40, 217, 0.25)' : 'rgba(167, 139, 250, 0.35)');
+        root.style.setProperty('--accent-dim', isLight ? 'rgba(109, 40, 217, 0.1)' : 'rgba(167, 139, 250, 0.12)');
+        root.style.setProperty('--accent-border', isLight ? 'rgba(109, 40, 217, 0.3)' : 'rgba(167, 139, 250, 0.28)');
       } else if (state.coin === 'SOL') {
-        root.style.setProperty('--accent', '#14b8a6');
-        root.style.setProperty('--accent-glow', 'rgba(20, 184, 166, 0.4)');
+        root.style.setProperty('--accent', isLight ? '#0f766e' : '#5eead4');
+        root.style.setProperty('--accent-glow', isLight ? 'rgba(15, 118, 110, 0.25)' : 'rgba(94, 234, 212, 0.35)');
+        root.style.setProperty('--accent-dim', isLight ? 'rgba(15, 118, 110, 0.1)' : 'rgba(94, 234, 212, 0.12)');
+        root.style.setProperty('--accent-border', isLight ? 'rgba(15, 118, 110, 0.3)' : 'rgba(94, 234, 212, 0.28)');
       } else if (state.coin === 'LTC') {
-        root.style.setProperty('--accent', '#94a3b8');
-        root.style.setProperty('--accent-glow', 'rgba(148, 163, 184, 0.4)');
+        root.style.setProperty('--accent', isLight ? '#52525b' : '#a1a1aa');
+        root.style.setProperty('--accent-glow', isLight ? 'rgba(82, 82, 91, 0.25)' : 'rgba(161, 161, 170, 0.35)');
+        root.style.setProperty('--accent-dim', isLight ? 'rgba(82, 82, 91, 0.1)' : 'rgba(161, 161, 170, 0.12)');
+        root.style.setProperty('--accent-border', isLight ? 'rgba(82, 82, 91, 0.3)' : 'rgba(161, 161, 170, 0.28)');
       } else {
-        root.style.setProperty('--accent', '#f59e0b');
-        root.style.setProperty('--accent-glow', 'rgba(245, 158, 11, 0.4)');
+        root.style.setProperty('--accent', isLight ? '#d97706' : '#f59e0b');
+        root.style.setProperty('--accent-glow', isLight ? 'rgba(217, 119, 6, 0.28)' : 'rgba(245, 158, 11, 0.35)');
+        root.style.setProperty('--accent-dim', isLight ? 'rgba(217, 119, 6, 0.1)' : 'rgba(245, 158, 11, 0.12)');
+        root.style.setProperty('--accent-border', isLight ? 'rgba(217, 119, 6, 0.32)' : 'rgba(245, 158, 11, 0.28)');
       }
 
       fetchPrices();
@@ -332,6 +364,11 @@
     }
 
     function setupEventListeners() {
+      const customCoin = document.getElementById('customCoin');
+      const customFiat = document.getElementById('customFiat');
+      customCoin.addEventListener('input', () => forceUppercase(customCoin));
+      customFiat.addEventListener('input', () => forceUppercase(customFiat));
+
       // Inputs
       elements.inputCoin.addEventListener('input', (e) => recalculateFrom('coin'));
       elements.inputSats.addEventListener('input', (e) => recalculateFrom('sats'));

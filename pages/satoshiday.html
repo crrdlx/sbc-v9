@@ -159,26 +159,34 @@
       // progress charts will render after current price loads
     }
 
-    const CC_API_KEY = "d1efdad22e251574754dda019b0580e2bc9664ad5c8f8d483aadd55a3f3f4e40";
+    const geckoIds = {
+      BTC: "bitcoin", ETH: "ethereum", LTC: "litecoin", XRP: "ripple",
+      SOL: "solana", DOGE: "dogecoin", ADA: "cardano", BCH: "bitcoin-cash", TRX: "tron"
+    };
+    const toGeckoId = (ticker) => geckoIds[ticker] || ticker.toLowerCase();
 
     function updatePrices() {
+      const coinId = toGeckoId(altcoinSelected);
+      const vs = fiatSelected.toLowerCase();
+      const ids = altcoinSelected === "BTC" ? "bitcoin" : (coinId + ",bitcoin");
+      const url = "https://api.coingecko.com/api/v3/simple/price?ids=" + ids + "&vs_currencies=" + vs + ",btc";
+
       $.ajax({
-        url: "https://min-api.cryptocompare.com/data/price?fsym=" + altcoinSelected + "&tsyms=" + fiatSelected + ",BTC&api_key=" + CC_API_KEY,
+        url: url,
         method: "GET",
         dataType: "json",
         success: function(data) {
-          if (data.Response === "Error") {
+          const coinData = data[coinId];
+          if (!coinData) {
             $("#coinPrice").text("Error: Invalid symbol or API unavailable");
-            console.error("API Error:", data.Message);
             return;
           }
-          currentPrice = parseFloat(data[fiatSelected]) || 0;
-          altcoinToBtcPrice = parseFloat(data["BTC"]) || (altcoinSelected === "BTC" ? 1 : 0);
+          currentPrice = parseFloat(coinData[vs]) || 0;
+          altcoinToBtcPrice = altcoinSelected === "BTC" ? 1 : (parseFloat(coinData["btc"]) || 0);
           $("#coinPrice").text('$' + currentPrice.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
           const form = document.unitconverter;
           form.fiatValue.value = "0.01";
           fiatConvert();
-          // Render charts that depend on currentPrice only after it is available
           renderProgressCharts();
         },
         error: function(xhr, status, error) {
@@ -189,50 +197,35 @@
     }
 
     function fetchHistoricalData() {
-      const startDate = new Date('2017-11-26').getTime() / 1000;
-      const endDate = Math.floor(Date.now() / 1000);
-      const days = Math.ceil((endDate - startDate) / (24 * 3600));
-      const maxLimit = 2000;
-      let allPrices = [];
-      let allLabels = [];
+      const fromTs = Math.floor(new Date('2017-11-26').getTime() / 1000);
+      const toTs   = Math.floor(Date.now() / 1000);
+      const url = "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart/range?vs_currency=usd&from=" + fromTs + "&to=" + toTs;
 
-      function fetchChunk(toTs, remainingDays) {
-        const limit = Math.min(maxLimit, remainingDays);
-        $.ajax({
-          url: "https://min-api.cryptocompare.com/data/v2/histoday?fsym=BTC&tsym=USD&limit=" + limit + "&toTs=" + toTs + "&api_key=" + CC_API_KEY,
-          method: "GET",
-          dataType: "json",
-          success: function(data) {
-            if (data.Response === "Error") {
-              console.error("Historical API Error:", data.Message);
-              renderFallbackChart();
-              return;
-            }
-            const prices = data.Data.Data;
-            // Cap at today
-            const nowTs = Math.floor(Date.now() / 1000);
-            const filtered = prices.filter(function(item) { return item.time <= nowTs; });
-            const labels = filtered.map(function(item) {
-              return new Date(item.time * 1000).toLocaleDateString("en-US", { month: "short", year: "numeric" });
-            });
-            allPrices = filtered.concat(allPrices);
-            allLabels = labels.concat(allLabels);
-
-            if (remainingDays > maxLimit) {
-              const newToTs = filtered[0].time - 24 * 3600;
-              fetchChunk(newToTs, remainingDays - maxLimit);
-            } else {
-              renderChart(allLabels, allPrices.map(function(item) { return (1000000 / item.close).toFixed(2); }));
-            }
-          },
-          error: function(xhr, status, error) {
-            console.error("Historical AJAX Error:", status, error, xhr.responseText);
+      $.ajax({
+        url: url,
+        method: "GET",
+        dataType: "json",
+        success: function(data) {
+          if (!data.prices || data.prices.length === 0) {
+            console.error("CoinGecko historical: empty response");
             renderFallbackChart();
+            return;
           }
-        });
-      }
-
-      fetchChunk(endDate, days);
+          const nowMs = Date.now();
+          const filtered = data.prices.filter(function(item) { return item[0] <= nowMs; });
+          const labels = filtered.map(function(item) {
+            return new Date(item[0]).toLocaleDateString("en-US", { month: "short", year: "numeric" });
+          });
+          const ratios = filtered.map(function(item) {
+            return (1000000 / item[1]).toFixed(2);
+          });
+          renderChart(labels, ratios);
+        },
+        error: function(xhr, status, error) {
+          console.error("Historical AJAX Error:", status, error, xhr.responseText);
+          renderFallbackChart();
+        }
+      });
     }
 
     function renderFallbackChart() {

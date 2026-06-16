@@ -127,6 +127,10 @@
     #smCard .converter-row input {
       background: rgba(255,255,255,0.06);
       border-color: rgba(99,179,237,0.25);
+      pointer-events: auto !important;
+      user-select: text !important;
+      -webkit-user-select: text !important;
+      cursor: text !important;
     }
     [data-theme="light"] #smCard .converter-row input {
       background: rgba(255,255,255,0.7);
@@ -249,9 +253,7 @@
     </div>
 
     <button id="splitModeBtn" onclick="toggleSplitMode()">⊞ Split Mode</button>
-    <p style="text-align:center; margin:0.45rem auto 0; max-width:360px; font-size:0.68rem; color:var(--text-muted); line-height:1.4; letter-spacing:0.2px;">
-      Conversions are approximate. Prices update periodically and may lag the market. Use at your own risk — no guarantees on accuracy.
-    </p>
+
 
     <div id="smCard">
       <div class="sm-selectors">
@@ -288,7 +290,7 @@
         <label>Crypto Amount <span id="sm-coinLabel" class="unit-badge">ETH</span></label>
         <div class="input-wrapper">
           <span class="symbol-prefix" id="sm-coinSymbolDisplay">Ξ</span>
-          <input type="text" id="sm-input-coin" inputmode="decimal" autocomplete="off" placeholder="0.00" readonly>
+          <input type="text" id="sm-input-coin" inputmode="decimal" autocomplete="off" placeholder="0.00">
         </div>
       </div>
 
@@ -296,7 +298,7 @@
         <label>Satoshi Equivalent <span class="unit-badge">SATS</span></label>
         <div class="input-wrapper">
           <span class="symbol-prefix">シ</span>
-          <input type="text" id="sm-input-sats" inputmode="numeric" autocomplete="off" placeholder="0" readonly>
+          <input type="text" id="sm-input-sats" inputmode="numeric" autocomplete="off" placeholder="0">
         </div>
       </div>
 
@@ -304,7 +306,7 @@
         <label>Fiat Value <span id="sm-fiatLabel" class="unit-badge">EUR</span></label>
         <div class="input-wrapper">
           <span class="symbol-prefix" id="sm-fiatSymbolDisplay">€</span>
-          <input type="text" id="sm-input-usd" inputmode="decimal" autocomplete="off" placeholder="0.00" readonly>
+          <input type="text" id="sm-input-usd" inputmode="decimal" autocomplete="off" placeholder="0.00">
         </div>
       </div>
 
@@ -337,7 +339,10 @@
       <a href="pages/tips.html">Tip Jar 😃</a>
     </div>
 
-    <div style="text-align:center; margin-top:2rem; font-size:0.85rem; color:var(--text-muted); font-weight:600;">SBC-v9</div>
+    <p style="text-align:center; margin:0.75rem auto 0.25rem; max-width:360px; font-size:0.68rem; color:var(--text-muted); line-height:1.4; letter-spacing:0.2px;">
+      This converter is in beta. Use at your own risk — there are no guarantees on accuracy.
+    </p>
+    <div style="text-align:center; margin-top:0.25rem; font-size:0.85rem; color:var(--text-muted); font-weight:600;">SBC-v9</div>
   </main>
 
   <div class="toast" id="toast">Copied!</div>
@@ -596,6 +601,24 @@
         });
       });
 
+      // SM input listeners (bidirectional)
+      smElements.inputCoin.addEventListener('input', () => smRecalculateFrom('coin'));
+      smElements.inputSats.addEventListener('input', () => smRecalculateFrom('sats'));
+      smElements.inputUsd.addEventListener('input',  () => smRecalculateFrom('usd'));
+
+      [smElements.inputCoin, smElements.inputSats, smElements.inputUsd].forEach(input => {
+        input.addEventListener('focus', () => {
+          if (input.value) input.value = input.value.replace(/,/g, '');
+        });
+        input.addEventListener('blur', () => {
+          const src = input.id.replace('sm-input-', '');
+          smRecalculateFrom(src === 'usd' ? 'usd' : src);
+          if (src === 'sats') { const v = parseNum(input.value); if (v) input.value = formatNum(v, 0); }
+          else if (src === 'coin') { const v = parseNum(input.value); if (v) input.value = formatNum(v, 8); }
+          else if (src === 'usd')  { const v = parseNum(input.value); if (v) input.value = formatNum(v, 4); }
+        });
+      });
+
       // Copy on click of labels/symbols
       document.querySelectorAll('.input-wrapper').forEach(wrapper => {
         wrapper.addEventListener('dblclick', () => {
@@ -649,9 +672,13 @@
       div.style.display  = smVisible ? 'flex'  : 'none';
       btn.classList.toggle('active', smVisible);
       if (smVisible) {
+        // Ensure SM inputs are fully interactive when card opens
+        ['sm-input-coin','sm-input-sats','sm-input-usd'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) { el.removeAttribute('readonly'); el.removeAttribute('disabled'); }
+        });
         handleSmCoinChange();
         if (smPriceInterval) clearInterval(smPriceInterval);
-        // Delay first SM fetch by 1.5s to avoid racing the main fetchPrices call
         setTimeout(() => { fetchSmPrices(); }, 1500);
         smPriceInterval = setInterval(fetchSmPrices, 60000);
       } else {
@@ -714,6 +741,59 @@
       smElements.inputSats.value = formatNum(sats, 0);
       smElements.inputCoin.value = formatNum(coinVal, 8);
       smElements.inputUsd.value  = formatNum(fiatVal, 4);
+    }
+
+    // SM → Top screen: convert SM value to sats, push to top, recalc top
+    function smRecalculateFrom(source) {
+      if (!smState.priceBtc || !smState.priceFiat) return;
+      let sats = 0;
+
+      if (source === 'coin') {
+        const val = parseNum(smElements.inputCoin.value);
+        if (!val && !smElements.inputCoin.value) {
+          smElements.inputSats.value = ''; smElements.inputUsd.value = '';
+          elements.inputCoin.value = ''; elements.inputSats.value = ''; elements.inputUsd.value = '';
+          return;
+        }
+        const btcVal = val * smState.priceBtc;
+        sats = btcVal * 100000000;
+        smElements.inputSats.value = formatNum(sats, 0);
+        smElements.inputUsd.value  = formatNum(val * smState.priceFiat, 4);
+      } else if (source === 'sats') {
+        const val = parseNum(smElements.inputSats.value);
+        if (!val && !smElements.inputSats.value) {
+          smElements.inputCoin.value = ''; smElements.inputUsd.value = '';
+          elements.inputCoin.value = ''; elements.inputSats.value = ''; elements.inputUsd.value = '';
+          return;
+        }
+        sats = val;
+        const btcVal  = sats / 100000000;
+        const coinVal = btcVal / smState.priceBtc;
+        smElements.inputCoin.value = formatNum(coinVal, 8);
+        smElements.inputUsd.value  = formatNum(coinVal * smState.priceFiat, 4);
+      } else if (source === 'usd') {
+        const val = parseNum(smElements.inputUsd.value);
+        if (!val && !smElements.inputUsd.value) {
+          smElements.inputCoin.value = ''; smElements.inputSats.value = '';
+          elements.inputCoin.value = ''; elements.inputSats.value = ''; elements.inputUsd.value = '';
+          return;
+        }
+        const coinVal = val / smState.priceFiat;
+        const btcVal  = coinVal * smState.priceBtc;
+        sats = btcVal * 100000000;
+        smElements.inputCoin.value = formatNum(coinVal, 8);
+        smElements.inputSats.value = formatNum(sats, 0);
+      }
+
+      // Push sats up to top screen and recalculate it
+      if (sats > 0 && state.priceBtc && state.priceFiat) {
+        const btcVal  = sats / 100000000;
+        const coinVal = btcVal / state.priceBtc;
+        const fiatVal = coinVal * state.priceFiat;
+        elements.inputSats.value = formatNum(sats, 0);
+        elements.inputCoin.value = formatNum(coinVal, 8);
+        elements.inputUsd.value  = formatNum(fiatVal, 4);
+      }
     }
 
     // Hook SM update into the existing event listeners instead of patching recalculateFrom

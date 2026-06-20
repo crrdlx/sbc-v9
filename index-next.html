@@ -28,8 +28,51 @@
 
   <style>
     /* ── Split Mode ── */
+    #screensRow {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      align-items: stretch;
+    }
+    #screensRow > #mainCard,
+    #screensRow > #smCard {
+      flex: 1 1 100%;
+      min-width: 0;
+    }
+
+    /* Side-by-side once there's enough width for two comfortable columns */
+    @media (min-width: 900px) {
+      main:has(#screensRow.sm-active) {
+        max-width: 920px;
+        width: 100%;
+      }
+      #screensRow.sm-active {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: flex-start;
+      }
+      #screensRow.sm-active > #mainCard,
+      #screensRow.sm-active > #smCard {
+        flex: 1 1 calc(50% - 0.5rem);
+      }
+      #screensRow.sm-active > #mainCard { order: 0; }
+      #screensRow.sm-active > #smCard { order: 1; }
+      #screensRow.sm-active #splitModeBtn {
+        flex: 0 0 100%;
+        max-width: max-content;
+        margin-left: auto;
+        margin-right: auto;
+        order: 2;
+      }
+      /* The TOP/divider label only makes sense in stacked (mobile) mode */
+      #screensRow.sm-active ~ #smDivider {
+        display: none !important;
+      }
+    }
+
     #splitModeBtn {
-      display: block;
+      display: inline-block;
+      width: fit-content;
       margin: 0.75rem auto 0;
       background: transparent;
       border: 1px solid var(--accent-border, rgba(245,158,11,0.4));
@@ -184,6 +227,7 @@
   </header>
 
   <main>
+    <div id="screensRow">
     <div class="glass-card" id="mainCard">
       <div class="selector-row">
         <div class="select-group">
@@ -261,7 +305,6 @@
 
     <button id="splitModeBtn" onclick="toggleSplitMode()">⊞ Split Mode</button>
 
-
     <div id="smCard">
       <div class="sm-selectors">
         <div class="select-group">
@@ -328,6 +371,7 @@
         <span id="sm-coinPrice">—</span> &nbsp;per <span id="sm-tickerName">ETH</span>
       </div>
     </div>
+    </div>
 
     <div class="sm-divider" id="smDivider" style="display:none">▲ TOP ▲</div>
 
@@ -354,9 +398,10 @@
     </div>
 
     <p style="text-align:center; margin:0.75rem auto 0.25rem; max-width:360px; font-size:0.68rem; color:var(--text-muted); line-height:1.4; letter-spacing:0.2px;">
-      Market fluctuations and price-feed delays can affect the values shown here, and prices update only periodically rather than in real time. This converter is in beta. Use at your own risk — there are no guarantees on accuracy.
+      Market fluctuations and price-feed delays can affect the values shown here, and prices update only periodically rather than in real time.<br>
+      This converter is in beta. Use at your own risk — there are no guarantees on accuracy.
     </p>
-    <div style="text-align:center; margin-top:0.25rem; font-size:0.85rem; color:var(--text-muted); font-weight:600;">SBC-v9</div>
+    <div style="text-align:center; margin-top:0.25rem; font-size:0.85rem; color:var(--text-muted); font-weight:600;">Satoshi Bitcoin Converter (since 2013) - SBC-v9</div>
   </main>
 
   <div class="toast" id="toast">Copied!</div>
@@ -707,9 +752,11 @@
       const card = document.getElementById('smCard');
       const btn  = document.getElementById('splitModeBtn');
       const div  = document.getElementById('smDivider');
+      const row  = document.getElementById('screensRow');
       card.style.display = smVisible ? 'block' : 'none';
       div.style.display  = smVisible ? 'flex'  : 'none';
       btn.classList.toggle('active', smVisible);
+      row.classList.toggle('sm-active', smVisible);
       if (smVisible) {
         // Ensure SM inputs are fully interactive when card opens
         ['sm-input-coin','sm-input-sats','sm-input-usd'].forEach(id => {

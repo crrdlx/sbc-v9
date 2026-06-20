@@ -1,0 +1,921 @@
+<!-- version 9.0.2 -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Satoshi Bitcoin Converter v9</title>
+  <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+  <meta name="theme-color" content="#0a0a0c" id="themeColorMeta">
+  <meta name="description" content="Convert between Bitcoin, altcoins, satoshis, and fiat currencies like USD, GBP, and more.">
+  <link rel="icon" type="image/png" href="img/favicon.png">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="img/icon_180.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Satoshi">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <script src="config.js"></script>
+  <script src="src/App.js"></script>
+  <script src="src/main.js"></script>
+  <script src="src/theme.js"></script>
+
+  <link rel="stylesheet" href="src/style.css">
+  <link rel="stylesheet" href="src/theme.css">
+  <link rel="stylesheet" href="src/index.css">
+
+  <style>
+    /* ── Split Mode ── */
+    #screensRow {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      align-items: stretch;
+    }
+    #screensRow > #mainCard,
+    #screensRow > #smCard {
+      flex: 1 1 100%;
+      min-width: 0;
+    }
+
+    /* Side-by-side once there's enough width for two comfortable columns */
+    @media (min-width: 900px) {
+      main:has(#screensRow.sm-active) {
+        max-width: 920px;
+        width: 100%;
+      }
+      #screensRow.sm-active {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: flex-start;
+      }
+      #screensRow.sm-active > #mainCard,
+      #screensRow.sm-active > #smCard {
+        flex: 1 1 calc(50% - 0.5rem);
+      }
+      #screensRow.sm-active > #mainCard { order: 0; }
+      #screensRow.sm-active > #smCard { order: 1; }
+      #screensRow.sm-active #splitModeBtn {
+        flex: 0 0 100%;
+        max-width: max-content;
+        margin-left: auto;
+        margin-right: auto;
+        order: 2;
+      }
+      /* The TOP/divider label only makes sense in stacked (mobile) mode */
+      #screensRow.sm-active ~ #smDivider {
+        display: none !important;
+      }
+    }
+
+    #splitModeBtn {
+      display: inline-block;
+      width: fit-content;
+      margin: 0.75rem auto 0;
+      background: transparent;
+      border: 1px solid var(--accent-border, rgba(245,158,11,0.4));
+      color: var(--accent);
+      font-family: inherit;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 0.4rem 1.1rem;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    #splitModeBtn:hover {
+      background: var(--accent-dim, rgba(245,158,11,0.1));
+    }
+    #splitModeBtn.active {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
+    }
+
+    #smCard {
+      display: none;
+      margin-top: 1rem;
+      background: var(--sm-bg, #1a2235);
+      border: 1px solid var(--sm-border, rgba(99,179,237,0.3));
+      border-radius: var(--card-radius, 12px);
+      padding: 1.25rem;
+      box-shadow: var(--card-shadow);
+      position: relative;
+    }
+    #smCard::before {
+      content: 'SPLIT MODE';
+      position: absolute;
+      top: -0.6rem;
+      left: 1rem;
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #63b3ed;
+      background: var(--sm-bg, #1a2235);
+      padding: 0 0.4rem;
+    }
+
+    /* Dark-theme SM colors */
+    [data-theme="dark"] #smCard,
+    :root:not([data-theme="light"]) #smCard {
+      --sm-bg: #0f1e2e;
+      --sm-border: rgba(99,179,237,0.25);
+    }
+    [data-theme="light"] #smCard {
+      --sm-bg: #dbeafe;
+      --sm-border: rgba(37,99,235,0.3);
+    }
+    [data-theme="light"] #smCard::before {
+      color: #1d4ed8;
+      background: #dbeafe;
+    }
+
+    #smCard .sm-selectors {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    #smCard .sm-selectors .select-group {
+      flex: 1;
+    }
+    #smCard .sm-selectors label {
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #63b3ed;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+    [data-theme="light"] #smCard .sm-selectors label {
+      color: #1d4ed8;
+    }
+
+    #smCard select,
+    #smCard .custom-inputs input {
+      background: rgba(255,255,255,0.07);
+      border-color: rgba(99,179,237,0.3);
+      color: var(--text-main);
+    }
+    [data-theme="light"] #smCard select,
+    [data-theme="light"] #smCard .custom-inputs input {
+      background: rgba(255,255,255,0.6);
+      border-color: rgba(37,99,235,0.3);
+    }
+
+    #smCard .converter-row input {
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(99,179,237,0.25);
+      pointer-events: auto !important;
+      user-select: text !important;
+      -webkit-user-select: text !important;
+      cursor: text !important;
+    }
+    [data-theme="light"] #smCard .converter-row input {
+      background: rgba(255,255,255,0.7);
+      border-color: rgba(37,99,235,0.25);
+    }
+
+    .sm-price-line {
+      text-align: center;
+      margin-top: 0.85rem;
+      padding-top: 0.85rem;
+      border-top: 1px solid rgba(99,179,237,0.2);
+      font-size: 0.75rem;
+      color: #63b3ed;
+      letter-spacing: 0.5px;
+    }
+    [data-theme="light"] .sm-price-line { color: #1d4ed8; }
+
+    .sm-price-line span {
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--text-main);
+    }
+
+    .sm-divider {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 0.5rem 0;
+      color: var(--accent);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+    }
+    .sm-divider::before, .sm-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--accent-border, rgba(245,158,11,0.3));
+    }
+  </style>
+</head>
+
+<body onload="init()">
+  <header>
+    <button type="button" id="installBtn" class="install-btn" hidden aria-label="Install app" title="Install app">Install</button>
+    <button type="button" class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle light/dark theme" title="Toggle theme">
+      <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <h1><a href="index.html" style="text-decoration:none">シ Satoshi Bitcoin Converter</a></h1>
+  </header>
+
+  <main>
+    <div id="screensRow">
+    <div class="glass-card" id="mainCard">
+      <div class="selector-row">
+        <div class="select-group">
+          <label>Asset</label>
+          <select id="altcoin" onchange="handleCoinChange()">
+            <option value="BTC" selected>฿ Bitcoin (BTC)</option>
+            <option value="ETH">Ξ Ethereum (ETH)</option>
+            <option value="SOL">◎ Solana (SOL)</option>
+            <option value="XRP">ꭓ Ripple (XRP)</option>
+            <option value="LTC">Ł Litecoin (LTC)</option>
+            <option value="DOGE">Ð Dogecoin (DOGE)</option>
+            <option value="ADA">₳ Cardano (ADA)</option>
+            <option value="BCH">Ƀ Bitcoin Cash (BCH)</option>
+            <option value="OTHER">Other (enter ticker)</option>
+          </select>
+          <div class="custom-inputs" id="customCoinWrap" style="display:none;">
+             <input type="text" id="customCoin" placeholder="Ticker (e.g. AVAX)" onchange="handleCoinChange()">
+          </div>
+        </div>
+
+        <div class="select-group">
+          <label>Fiat Currency</label>
+          <select id="fiat" onchange="handleCoinChange()">
+            <option value="USD" selected>$ USD</option>
+            <option value="EUR">€ EUR</option>
+            <option value="GBP">£ GBP</option>
+            <option value="JPY">¥ JPY</option>
+            <option value="CAD">C$ CAD</option>
+            <option value="AUD">A$ AUD</option>
+            <option value="CHF">CHF</option>
+            <option value="INR">₹ INR</option>
+            <option value="OTHER">Other (enter currency)</option>
+          </select>
+           <div class="custom-inputs" id="customFiatWrap" style="display:none;">
+             <input type="text" id="customFiat" placeholder="Fiat (e.g. MXN)" onchange="handleCoinChange()">
+          </div>
+        </div>
+      </div>
+
+      <div class="converter-row">
+        <label>Crypto Amount <span id="coinLabel" class="unit-badge">BTC</span></label>
+        <div class="input-wrapper">
+          <span class="symbol-prefix" id="coinSymbolDisplay">฿</span>
+          <input type="text" id="input-coin" inputmode="decimal" autocomplete="off" placeholder="0.00">
+        </div>
+      </div>
+
+      <div class="converter-row">
+        <label>Satoshi Equivalent <span class="unit-badge">SATS</span></label>
+        <div class="input-wrapper">
+          <span class="symbol-prefix">シ</span>
+          <input type="text" id="input-sats" inputmode="numeric" autocomplete="off" placeholder="0">
+        </div>
+      </div>
+
+      <div class="converter-row">
+        <label>Fiat Value <span id="fiatLabel" class="unit-badge">USD</span></label>
+        <div class="input-wrapper">
+          <span class="symbol-prefix" id="fiatSymbolDisplay">$</span>
+          <input type="text" id="input-usd" inputmode="decimal" autocomplete="off" placeholder="0.00">
+        </div>
+      </div>
+
+      <div class="price-ticker">
+        <p>Current <span id="tickerName">Bitcoin</span> Price</p>
+        <div class="live-price" id="coinPrice">Loading...</div>
+        <div>
+          <button id="refreshBtn" onclick="forceFetchPrices()" class="refresh-btn" aria-label="Refresh price" title="Refresh Price">
+            <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+          </button>
+        </div>
+        <a href="pages/satoshiday.html" class="sats-per-dollar" id="satsPerDollar" style="display: none; text-decoration: none;">-- sats per $1</a>
+      </div>
+    </div>
+
+    <button id="splitModeBtn" onclick="toggleSplitMode()">⊞ Split Mode</button>
+
+    <div id="smCard">
+      <div class="sm-selectors">
+        <div class="select-group">
+          <label>Asset</label>
+          <select id="sm-altcoin" onchange="handleSmCoinChange()">
+            <option value="ETH" selected>Ξ Ethereum (ETH)</option>
+            <option value="BTC">฿ Bitcoin (BTC)</option>
+            <option value="SOL">◎ Solana (SOL)</option>
+            <option value="XRP">ꭓ Ripple (XRP)</option>
+            <option value="LTC">Ł Litecoin (LTC)</option>
+            <option value="DOGE">Ð Dogecoin (DOGE)</option>
+            <option value="ADA">₳ Cardano (ADA)</option>
+            <option value="BCH">Ƀ Bitcoin Cash (BCH)</option>
+            <option value="OTHER">Other (enter ticker)</option>
+          </select>
+          <div class="custom-inputs" id="sm-customCoinWrap" style="display:none;">
+            <input type="text" id="sm-customCoin" placeholder="Ticker (e.g. AVAX)" onchange="handleSmCoinChange()">
+          </div>
+        </div>
+        <div class="select-group">
+          <label>Fiat Currency</label>
+          <select id="sm-fiat" onchange="handleSmCoinChange()">
+            <option value="EUR" selected>€ EUR</option>
+            <option value="USD">$ USD</option>
+            <option value="GBP">£ GBP</option>
+            <option value="JPY">¥ JPY</option>
+            <option value="CAD">C$ CAD</option>
+            <option value="AUD">A$ AUD</option>
+            <option value="CHF">CHF</option>
+            <option value="INR">₹ INR</option>
+            <option value="OTHER">Other (enter currency)</option>
+          </select>
+          <div class="custom-inputs" id="sm-customFiatWrap" style="display:none;">
+            <input type="text" id="sm-customFiat" placeholder="Fiat (e.g. MXN)" onchange="handleSmCoinChange()">
+          </div>
+        </div>
+      </div>
+
+      <div class="converter-row">
+        <label>Crypto Amount <span id="sm-coinLabel" class="unit-badge">ETH</span></label>
+        <div class="input-wrapper">
+          <span class="symbol-prefix" id="sm-coinSymbolDisplay">Ξ</span>
+          <input type="text" id="sm-input-coin" inputmode="decimal" autocomplete="off" placeholder="0.00">
+        </div>
+      </div>
+
+      <div class="converter-row">
+        <label>Satoshi Equivalent <span class="unit-badge">SATS</span></label>
+        <div class="input-wrapper">
+          <span class="symbol-prefix">シ</span>
+          <input type="text" id="sm-input-sats" inputmode="numeric" autocomplete="off" placeholder="0">
+        </div>
+      </div>
+
+      <div class="converter-row">
+        <label>Fiat Value <span id="sm-fiatLabel" class="unit-badge">EUR</span></label>
+        <div class="input-wrapper">
+          <span class="symbol-prefix" id="sm-fiatSymbolDisplay">€</span>
+          <input type="text" id="sm-input-usd" inputmode="decimal" autocomplete="off" placeholder="0.00">
+        </div>
+      </div>
+
+      <div class="sm-price-line">
+        <span id="sm-coinPrice">—</span> &nbsp;per <span id="sm-tickerName">ETH</span>
+      </div>
+    </div>
+    </div>
+
+    <div class="sm-divider" id="smDivider" style="display:none">▲ TOP ▲</div>
+
+
+    <!-- StatCounter Code -->
+    <script type="text/javascript">
+      var sc_project = 9064341;
+      var sc_invisible = 1;
+      var sc_partition = 35;
+      var sc_security = "4159c4ae";
+    </script>
+    <script type="text/javascript" src="https://www.statcounter.com/counter/counter_xhtml.js"></script>
+    <noscript>
+      <div class="statcounter"><a href="https://www.statcounter.com/" target="_blank"><img class="statcounter"
+            src="https://c36.statcounter.com/9064341/0/4159c4ae/1/" alt="hit counter html code"></a></div>
+    </noscript>
+
+    <div class="footer-links">
+      <a href="pages/about.html">About</a>
+      <a href="pages/satoshiday.html">Satoshi Day</a>
+      <a href="pages/dev_notes.html">Dev Notes</a>
+      <a href="pages/grow.html">Grow</a>
+      <a href="pages/tips.html">Tip Jar 😃</a>
+    </div>
+
+    <p style="text-align:center; margin:0.75rem auto 0.25rem; max-width:360px; font-size:0.68rem; color:var(--text-muted); line-height:1.4; letter-spacing:0.2px;">
+      Market fluctuations and price-feed delays can affect the values shown here, and prices update only periodically rather than in real time.<br>
+      This converter is in beta. Use at your own risk — there are no guarantees on accuracy.
+    </p>
+    <div style="text-align:center; margin-top:0.25rem; font-size:0.85rem; color:var(--text-muted); font-weight:600;">Satoshi Bitcoin Converter (since 2013) - SBC-v9</div>
+  </main>
+
+  <div class="toast" id="toast">Copied!</div>
+
+  <script>
+    const state = {
+      coin: 'BTC',
+      fiat: 'USD',
+      priceFiat: 0,
+      priceBtc: 1,
+      isFetching: false
+    };
+
+    const coinSymbols = { BTC: "฿", ETH: "Ξ", LTC: "Ł", XRP: "ꭓ", SOL: "◎", DOGE: "Ð", ADA: "₳", BCH: "Ƀ" };
+    const fiatSymbols = { USD: "$", GBP: "£", EUR: "€", CAD: "C$", AUD: "A$", INR: "₹", JPY: "¥", KRW: "₩", CHF: "CHF" };
+
+    const geckoIds = {
+      BTC: "bitcoin", ETH: "ethereum", LTC: "litecoin", XRP: "ripple",
+      SOL: "solana", DOGE: "dogecoin", ADA: "cardano", DOT: "polkadot",
+      AVAX: "avalanche-2", MATIC: "matic-network", LINK: "chainlink",
+      UNI: "uniswap", ATOM: "cosmos", BCH: "bitcoin-cash", TRX: "tron"
+    };
+    const toGeckoId = (ticker) => geckoIds[ticker] || ticker.toLowerCase();
+
+    // UI Elements
+    const elements = {
+      inputCoin: document.getElementById('input-coin'),
+      inputSats: document.getElementById('input-sats'),
+      inputUsd: document.getElementById('input-usd'),
+      coinPrice: document.getElementById('coinPrice'),
+      satsPerDollar: document.getElementById('satsPerDollar'),
+      coinLabel: document.getElementById('coinLabel'),
+      fiatLabel: document.getElementById('fiatLabel'),
+      coinSymbolDisplay: document.getElementById('coinSymbolDisplay'),
+      fiatSymbolDisplay: document.getElementById('fiatSymbolDisplay'),
+      tickerName: document.getElementById('tickerName'),
+      toast: document.getElementById('toast'),
+    };
+
+    const parseNum = (str) => {
+        if(!str) return 0;
+        let cleaned = str.toString().replace(/,/g, '');
+        if(cleaned.match(/[a-zA-Z]/)) return 0;
+        let val = parseFloat(cleaned);
+        return isNaN(val) ? 0 : val;
+    };
+
+    const formatNum = (num, decimals) => {
+      if(num === 0) return "";
+      return new Intl.NumberFormat('en-US', {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals
+      }).format(num);
+    };
+
+    const priceDisplayDecimals = (price, coin) => {
+      if (coin === 'BTC') return 2;
+      if (price >= 1) return 2;
+      if (price >= 0.01) return 4;
+      return 6;
+    };
+
+    const forceUppercase = (input) => {
+      const start = input.selectionStart;
+      const end = input.selectionEnd;
+      input.value = input.value.toUpperCase();
+      input.setSelectionRange(start, end);
+    };
+
+    let priceInterval = null;
+
+    window.initSbcUi = function () {
+      handleCoinChange();
+      setupEventListeners();
+
+      if (priceInterval) clearInterval(priceInterval);
+      priceInterval = setInterval(fetchPrices, 60000); // Auto update every 1 minute
+    };
+
+    async function forceFetchPrices() {
+      const btn = document.getElementById('refreshBtn');
+      if (btn) btn.classList.add('spinning');
+
+      await fetchPrices();
+
+      if (btn) btn.classList.remove('spinning');
+      if (priceInterval) clearInterval(priceInterval);
+      priceInterval = setInterval(fetchPrices, 60000);
+    }
+
+    async function fetchPrices() {
+      if(state.isFetching) return;
+      state.isFetching = true;
+      elements.coinPrice.style.opacity = '0.5';
+
+      try {
+        const coinId = toGeckoId(state.coin);
+        const vs = state.fiat.toLowerCase();
+        const ids = state.coin === 'BTC' ? 'bitcoin' : `${coinId},bitcoin`;
+        const url = `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=${vs},btc`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+
+        const coinData = data[coinId];
+        if (!coinData) { elements.coinPrice.innerText = "API Error"; return; }
+
+        state.priceFiat = parseFloat(coinData[vs]) || 0;
+        state.priceBtc  = state.coin === 'BTC' ? 1 : (parseFloat(coinData['btc']) || 0);
+
+        const priceDecimals = priceDisplayDecimals(state.priceFiat, state.coin);
+        elements.coinPrice.innerText = `${fiatSymbols[state.fiat]||''}${formatNum(state.priceFiat, priceDecimals)}`;
+
+        if(state.priceBtc > 0 && state.priceFiat > 0) {
+          const btcPrice = state.coin === 'BTC' ? state.priceFiat : (parseFloat(data['bitcoin']?.[vs]) || 0);
+          const satsPerFiat = btcPrice > 0 ? Math.round(100000000 / btcPrice) : 0;
+          if (satsPerFiat > 0) {
+            elements.satsPerDollar.innerText = `${satsPerFiat.toLocaleString()} sats per ${fiatSymbols[state.fiat]||''}1`;
+            elements.satsPerDollar.style.display = 'block';
+          } else {
+            elements.satsPerDollar.style.display = 'none';
+          }
+        } else {
+          elements.satsPerDollar.style.display = 'none';
+        }
+
+        recalculateFrom('coin');
+        smUpdateIfVisible();
+      } catch (err) {
+        console.error(err);
+        elements.coinPrice.innerText = "Network Error";
+      } finally {
+        state.isFetching = false;
+        elements.coinPrice.style.opacity = '1';
+      }
+    }
+
+    function handleCoinChange() {
+      const altcoinSel = document.getElementById('altcoin');
+      const fiatSel = document.getElementById('fiat');
+      const customCoinWrap = document.getElementById('customCoinWrap');
+      const customFiatWrap = document.getElementById('customFiatWrap');
+      const customCoinInput = document.getElementById('customCoin');
+      const customFiatInput = document.getElementById('customFiat');
+
+      const coinIsOther = altcoinSel.value === 'OTHER';
+      const fiatIsOther = fiatSel.value === 'OTHER';
+
+      customCoinWrap.style.display = coinIsOther ? '' : 'none';
+      customFiatWrap.style.display = fiatIsOther ? '' : 'none';
+      if (!coinIsOther) customCoinInput.value = '';
+      if (!fiatIsOther) customFiatInput.value = '';
+
+      const customCoin = customCoinInput.value.trim().toUpperCase();
+      const customFiat = customFiatInput.value.trim().toUpperCase();
+
+      state.coin = (coinIsOther && customCoin) ? customCoin : (coinIsOther ? 'BTC' : altcoinSel.value);
+      state.fiat = (fiatIsOther && customFiat) ? customFiat : (fiatIsOther ? 'USD' : fiatSel.value);
+
+      customCoinInput.value = customCoin;
+      customFiatInput.value = customFiat;
+
+      // Autofocus the custom field the moment "Other" is chosen
+      if (coinIsOther && document.activeElement === altcoinSel) customCoinInput.focus();
+      if (fiatIsOther && document.activeElement === fiatSel) customFiatInput.focus();
+
+      elements.coinLabel.innerText = state.coin;
+      elements.fiatLabel.innerText = state.fiat;
+      elements.coinSymbolDisplay.innerText = coinSymbols[state.coin] || '';
+      elements.fiatSymbolDisplay.innerText = fiatSymbols[state.fiat] || '';
+      elements.tickerName.innerText = state.coin;
+
+      // Update theme colors (gray cypherpunk accents per asset)
+      const root = document.documentElement;
+      const isLight = root.getAttribute('data-theme') === 'light';
+      if (state.coin === 'ETH') {
+        root.style.setProperty('--accent', isLight ? '#6d28d9' : '#a78bfa');
+        root.style.setProperty('--accent-glow', isLight ? 'rgba(109, 40, 217, 0.25)' : 'rgba(167, 139, 250, 0.35)');
+        root.style.setProperty('--accent-dim', isLight ? 'rgba(109, 40, 217, 0.1)' : 'rgba(167, 139, 250, 0.12)');
+        root.style.setProperty('--accent-border', isLight ? 'rgba(109, 40, 217, 0.3)' : 'rgba(167, 139, 250, 0.28)');
+      } else if (state.coin === 'SOL') {
+        root.style.setProperty('--accent', isLight ? '#0f766e' : '#5eead4');
+        root.style.setProperty('--accent-glow', isLight ? 'rgba(15, 118, 110, 0.25)' : 'rgba(94, 234, 212, 0.35)');
+        root.style.setProperty('--accent-dim', isLight ? 'rgba(15, 118, 110, 0.1)' : 'rgba(94, 234, 212, 0.12)');
+        root.style.setProperty('--accent-border', isLight ? 'rgba(15, 118, 110, 0.3)' : 'rgba(94, 234, 212, 0.28)');
+      } else if (state.coin === 'LTC') {
+        root.style.setProperty('--accent', isLight ? '#52525b' : '#a1a1aa');
+        root.style.setProperty('--accent-glow', isLight ? 'rgba(82, 82, 91, 0.25)' : 'rgba(161, 161, 170, 0.35)');
+        root.style.setProperty('--accent-dim', isLight ? 'rgba(82, 82, 91, 0.1)' : 'rgba(161, 161, 170, 0.12)');
+        root.style.setProperty('--accent-border', isLight ? 'rgba(82, 82, 91, 0.3)' : 'rgba(161, 161, 170, 0.28)');
+      } else {
+        root.style.setProperty('--accent', isLight ? '#d97706' : '#f59e0b');
+        root.style.setProperty('--accent-glow', isLight ? 'rgba(217, 119, 6, 0.28)' : 'rgba(245, 158, 11, 0.35)');
+        root.style.setProperty('--accent-dim', isLight ? 'rgba(217, 119, 6, 0.1)' : 'rgba(245, 158, 11, 0.12)');
+        root.style.setProperty('--accent-border', isLight ? 'rgba(217, 119, 6, 0.32)' : 'rgba(245, 158, 11, 0.28)');
+      }
+
+      fetchPrices();
+    }
+
+    function recalculateFrom(source) {
+      if(!state.priceFiat) return;
+
+      if (source === 'coin') {
+        let val = parseNum(elements.inputCoin.value);
+        if(val === 0 && !elements.inputCoin.value) {
+           elements.inputSats.value = ''; elements.inputUsd.value = ''; return;
+        }
+        let btcVal = val * state.priceBtc;
+        let satsVal = btcVal * 100000000;
+        let fiatVal = val * state.priceFiat;
+
+        elements.inputSats.value = formatNum(satsVal, 0);
+        elements.inputUsd.value = formatNum(fiatVal, 4);
+      }
+      else if (source === 'sats') {
+        let val = parseNum(elements.inputSats.value);
+        if(val === 0 && !elements.inputSats.value) {
+           elements.inputCoin.value = ''; elements.inputUsd.value = ''; return;
+        }
+        let btcVal = val / 100000000;
+        let coinVal = btcVal / state.priceBtc;
+        let fiatVal = coinVal * state.priceFiat;
+
+        elements.inputCoin.value = formatNum(coinVal, 8);
+        elements.inputUsd.value = formatNum(fiatVal, 4);
+      }
+      else if (source === 'fiat') {
+        let val = parseNum(elements.inputUsd.value);
+        if(val === 0 && !elements.inputUsd.value) {
+           elements.inputCoin.value = ''; elements.inputSats.value = ''; return;
+        }
+        let coinVal = val / state.priceFiat;
+        let btcVal = coinVal * state.priceBtc;
+        let satsVal = btcVal * 100000000;
+
+        elements.inputCoin.value = formatNum(coinVal, 8);
+        elements.inputSats.value = formatNum(satsVal, 0);
+      }
+    }
+
+    function setupEventListeners() {
+      const customCoin = document.getElementById('customCoin');
+      const customFiat = document.getElementById('customFiat');
+      customCoin.addEventListener('input', () => forceUppercase(customCoin));
+      customFiat.addEventListener('input', () => forceUppercase(customFiat));
+
+      // SM custom ticker inputs: force uppercase
+      const smCustomCoin = document.getElementById('sm-customCoin');
+      const smCustomFiat = document.getElementById('sm-customFiat');
+      smCustomCoin.addEventListener('input', () => forceUppercase(smCustomCoin));
+      smCustomFiat.addEventListener('input', () => forceUppercase(smCustomFiat));
+
+      // Inputs
+      elements.inputCoin.addEventListener('input', (e) => { recalculateFrom('coin'); smUpdateIfVisible(); });
+      elements.inputSats.addEventListener('input', (e) => { recalculateFrom('sats'); smUpdateIfVisible(); });
+      elements.inputUsd.addEventListener('input', (e) => { recalculateFrom('fiat'); smUpdateIfVisible(); });
+
+      // Clean on focus
+      [elements.inputCoin, elements.inputSats, elements.inputUsd].forEach(input => {
+        input.addEventListener('focus', () => {
+           if(input.value) {
+               input.value = input.value.replace(/,/g, '');
+           }
+        });
+        input.addEventListener('blur', () => {
+           const src = input.id.replace('input-', '');
+           recalculateFrom(src);
+           // Reformat the source field itself with commas on blur
+           if (src === 'sats') {
+             const v = parseNum(input.value);
+             if (v) input.value = formatNum(v, 0);
+           } else if (src === 'coin') {
+             const v = parseNum(input.value);
+             if (v) input.value = formatNum(v, 8);
+           } else if (src === 'usd') {
+             const v = parseNum(input.value);
+             if (v) input.value = formatNum(v, 4);
+           }
+           smUpdateIfVisible();
+        });
+      });
+
+      // SM input listeners (bidirectional)
+      smElements.inputCoin.addEventListener('input', () => smRecalculateFrom('coin'));
+      smElements.inputSats.addEventListener('input', () => smRecalculateFrom('sats'));
+      smElements.inputUsd.addEventListener('input',  () => smRecalculateFrom('usd'));
+
+      [smElements.inputCoin, smElements.inputSats, smElements.inputUsd].forEach(input => {
+        input.addEventListener('focus', () => {
+          if (input.value) input.value = input.value.replace(/,/g, '');
+        });
+        input.addEventListener('blur', () => {
+          const src = input.id.replace('sm-input-', '');
+          smRecalculateFrom(src === 'usd' ? 'usd' : src);
+          if (src === 'sats') { const v = parseNum(input.value); if (v) input.value = formatNum(v, 0); }
+          else if (src === 'coin') { const v = parseNum(input.value); if (v) input.value = formatNum(v, 8); }
+          else if (src === 'usd')  { const v = parseNum(input.value); if (v) input.value = formatNum(v, 4); }
+        });
+      });
+
+      // Copy on click of labels/symbols
+      document.querySelectorAll('.input-wrapper').forEach(wrapper => {
+        wrapper.addEventListener('dblclick', () => {
+           const input = wrapper.querySelector('input');
+           if(input.value) {
+               navigator.clipboard.writeText(input.value.replace(/,/g, ''));
+               showToast();
+           }
+        });
+      });
+    }
+
+    function showToast() {
+      elements.toast.classList.add('show');
+      if (navigator.vibrate) navigator.vibrate(50);
+      setTimeout(() => {
+        elements.toast.classList.remove('show');
+      }, 2000);
+    }
+
+    // ── Split Mode ────────────────────────────────────────────────────────
+    const smState = {
+      coin: 'ETH',
+      fiat: 'EUR',
+      priceFiat: 0,
+      priceBtc: 0,
+      isFetching: false
+    };
+
+    const smElements = {
+      inputCoin: document.getElementById('sm-input-coin'),
+      inputSats: document.getElementById('sm-input-sats'),
+      inputUsd:  document.getElementById('sm-input-usd'),
+      coinPrice: document.getElementById('sm-coinPrice'),
+      coinLabel: document.getElementById('sm-coinLabel'),
+      fiatLabel: document.getElementById('sm-fiatLabel'),
+      coinSymbolDisplay: document.getElementById('sm-coinSymbolDisplay'),
+      fiatSymbolDisplay: document.getElementById('sm-fiatSymbolDisplay'),
+      tickerName: document.getElementById('sm-tickerName'),
+    };
+
+    let smVisible = false;
+    let smPriceInterval = null;
+
+    function toggleSplitMode() {
+      smVisible = !smVisible;
+      const card = document.getElementById('smCard');
+      const btn  = document.getElementById('splitModeBtn');
+      const div  = document.getElementById('smDivider');
+      const row  = document.getElementById('screensRow');
+      card.style.display = smVisible ? 'block' : 'none';
+      div.style.display  = smVisible ? 'flex'  : 'none';
+      btn.classList.toggle('active', smVisible);
+      row.classList.toggle('sm-active', smVisible);
+      if (smVisible) {
+        // Ensure SM inputs are fully interactive when card opens
+        ['sm-input-coin','sm-input-sats','sm-input-usd'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) { el.removeAttribute('readonly'); el.removeAttribute('disabled'); }
+        });
+        handleSmCoinChange();
+        if (smPriceInterval) clearInterval(smPriceInterval);
+        setTimeout(() => { fetchSmPrices(); }, 1500);
+        smPriceInterval = setInterval(fetchSmPrices, 60000);
+      } else {
+        if (smPriceInterval) clearInterval(smPriceInterval);
+      }
+    }
+
+    function handleSmCoinChange() {
+      const smAltcoinSel = document.getElementById('sm-altcoin');
+      const smFiatSel = document.getElementById('sm-fiat');
+      const smCustomCoinWrap = document.getElementById('sm-customCoinWrap');
+      const smCustomFiatWrap = document.getElementById('sm-customFiatWrap');
+      const smCustomCoinInput = document.getElementById('sm-customCoin');
+      const smCustomFiatInput = document.getElementById('sm-customFiat');
+
+      const coinIsOther = smAltcoinSel.value === 'OTHER';
+      const fiatIsOther = smFiatSel.value === 'OTHER';
+
+      smCustomCoinWrap.style.display = coinIsOther ? '' : 'none';
+      smCustomFiatWrap.style.display = fiatIsOther ? '' : 'none';
+      if (!coinIsOther) smCustomCoinInput.value = '';
+      if (!fiatIsOther) smCustomFiatInput.value = '';
+
+      const customCoin = smCustomCoinInput.value.trim().toUpperCase();
+      const customFiat = smCustomFiatInput.value.trim().toUpperCase();
+
+      smState.coin = (coinIsOther && customCoin) ? customCoin : (coinIsOther ? 'ETH' : smAltcoinSel.value);
+      smState.fiat = (fiatIsOther && customFiat) ? customFiat : (fiatIsOther ? 'EUR' : smFiatSel.value);
+
+      smCustomCoinInput.value = customCoin;
+      smCustomFiatInput.value = customFiat;
+
+      if (coinIsOther && document.activeElement === smAltcoinSel) smCustomCoinInput.focus();
+      if (fiatIsOther && document.activeElement === smFiatSel) smCustomFiatInput.focus();
+
+      smElements.coinLabel.innerText = smState.coin;
+      smElements.fiatLabel.innerText = smState.fiat;
+      smElements.coinSymbolDisplay.innerText = coinSymbols[smState.coin] || '';
+      smElements.fiatSymbolDisplay.innerText = fiatSymbols[smState.fiat] || '';
+      smElements.tickerName.innerText = smState.coin;
+      setTimeout(() => { fetchSmPrices(); }, 300);
+    }
+
+    async function fetchSmPrices() {
+      if (smState.isFetching) return;
+      smState.isFetching = true;
+      try {
+        const coinId = toGeckoId(smState.coin);
+        const vs = smState.fiat.toLowerCase();
+        const ids = smState.coin === 'BTC' ? 'bitcoin' : `${coinId},bitcoin`;
+        const url = `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=${vs},btc`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        const coinData = data[coinId];
+        if (!coinData) { smElements.coinPrice.innerText = 'API Error'; return; }
+        smState.priceFiat = parseFloat(coinData[vs]) || 0;
+        smState.priceBtc  = smState.coin === 'BTC' ? 1 : (parseFloat(coinData['btc']) || 0);
+        const dec = priceDisplayDecimals(smState.priceFiat, smState.coin);
+        smElements.coinPrice.innerText = (fiatSymbols[smState.fiat]||'') + formatNum(smState.priceFiat, dec);
+        smRecalculateFromSats();
+      } catch(e) {
+        console.error('SM fetch error:', e);
+        smElements.coinPrice.innerText = 'Network Error';
+      } finally {
+        smState.isFetching = false;
+      }
+    }
+
+    // Called whenever top screen changes — bridge is always SATS
+    function smRecalculateFromSats() {
+      if (!smState.priceBtc || !smState.priceFiat) return;
+      const sats = parseNum(elements.inputSats.value);
+      if (!sats && !elements.inputSats.value) {
+        smElements.inputCoin.value = '';
+        smElements.inputSats.value = '';
+        smElements.inputUsd.value  = '';
+        return;
+      }
+      const btcVal  = sats / 100000000;
+      const coinVal = btcVal / smState.priceBtc;
+      const fiatVal = coinVal * smState.priceFiat;
+      smElements.inputSats.value = formatNum(sats, 0);
+      smElements.inputCoin.value = formatNum(coinVal, 8);
+      smElements.inputUsd.value  = formatNum(fiatVal, 4);
+    }
+
+    // SM → Top screen: convert SM value to sats, push to top, recalc top
+    function smRecalculateFrom(source) {
+      if (!smState.priceBtc || !smState.priceFiat) return;
+      let sats = 0;
+
+      if (source === 'coin') {
+        const val = parseNum(smElements.inputCoin.value);
+        if (!val && !smElements.inputCoin.value) {
+          smElements.inputSats.value = ''; smElements.inputUsd.value = '';
+          elements.inputCoin.value = ''; elements.inputSats.value = ''; elements.inputUsd.value = '';
+          return;
+        }
+        const btcVal = val * smState.priceBtc;
+        sats = btcVal * 100000000;
+        smElements.inputSats.value = formatNum(sats, 0);
+        smElements.inputUsd.value  = formatNum(val * smState.priceFiat, 4);
+      } else if (source === 'sats') {
+        const val = parseNum(smElements.inputSats.value);
+        if (!val && !smElements.inputSats.value) {
+          smElements.inputCoin.value = ''; smElements.inputUsd.value = '';
+          elements.inputCoin.value = ''; elements.inputSats.value = ''; elements.inputUsd.value = '';
+          return;
+        }
+        sats = val;
+        const btcVal  = sats / 100000000;
+        const coinVal = btcVal / smState.priceBtc;
+        smElements.inputCoin.value = formatNum(coinVal, 8);
+        smElements.inputUsd.value  = formatNum(coinVal * smState.priceFiat, 4);
+      } else if (source === 'usd') {
+        const val = parseNum(smElements.inputUsd.value);
+        if (!val && !smElements.inputUsd.value) {
+          smElements.inputCoin.value = ''; smElements.inputSats.value = '';
+          elements.inputCoin.value = ''; elements.inputSats.value = ''; elements.inputUsd.value = '';
+          return;
+        }
+        const coinVal = val / smState.priceFiat;
+        const btcVal  = coinVal * smState.priceBtc;
+        sats = btcVal * 100000000;
+        smElements.inputCoin.value = formatNum(coinVal, 8);
+        smElements.inputSats.value = formatNum(sats, 0);
+      }
+
+      // Push sats up to top screen and recalculate it
+      if (sats > 0 && state.priceBtc && state.priceFiat) {
+        const btcVal  = sats / 100000000;
+        const coinVal = btcVal / state.priceBtc;
+        const fiatVal = coinVal * state.priceFiat;
+        elements.inputSats.value = formatNum(sats, 0);
+        elements.inputCoin.value = formatNum(coinVal, 8);
+        elements.inputUsd.value  = formatNum(fiatVal, 4);
+      }
+    }
+
+    // Hook SM update into the existing event listeners instead of patching recalculateFrom
+    function smUpdateIfVisible() {
+      if (smVisible) smRecalculateFromSats();
+    }
+
+    // Fallback if PWA script fails
+    setTimeout(() => {
+        if(!elements.coinPrice.innerText || elements.coinPrice.innerText === "Loading...") {
+            window.initSbcUi();
+        }
+    }, 1000);
+  </script>
+</body>
+</html>
